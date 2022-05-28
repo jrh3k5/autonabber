@@ -7,6 +7,7 @@ import (
 	"jrh3k5/autonabber/client/ynab"
 	"jrh3k5/autonabber/client/ynab/http"
 	"jrh3k5/autonabber/client/ynab/model"
+	"jrh3k5/autonabber/delta"
 	"jrh3k5/autonabber/input"
 	"os"
 
@@ -37,20 +38,22 @@ func main() {
 		logger.Fatalf("Unable to successfully choose a budget: %v", err)
 	}
 
-	fmt.Printf("Chosen budget: %s\n", budget.Name)
-
 	budgetCategoryGroups, err := client.GetCategories(budget)
 	if err != nil {
 		logger.Fatalf("Unable to retrieve budget categories: %w", err)
 	}
 
-	model.PrintBudgetCategoryGroups(budgetCategoryGroups)
-
-	_, err = getBudgetChanges(appArgs.InputFile)
+	budgetChange, err := getBudgetChanges(appArgs.InputFile)
 	if err != nil {
 		logger.Fatalf("Failed to select budget change: %w", err)
 	}
-	// TODO: calculate delta
+
+	deltas, err := delta.NewDeltas(budgetCategoryGroups, budgetChange)
+	if err != nil {
+		logger.Fatalf("Failed to generate delta: %w", err)
+	}
+
+	delta.PrintDeltas(deltas)
 	// TODO: make sure that there's enough in Ready to Assign
 	// TODO: apply changes
 
@@ -106,7 +109,7 @@ func getBudgetChanges(filePath string) (*input.BudgetChange, error) {
 	}
 
 	prompt := promptui.Select{
-		Label:     "Select a budget",
+		Label:     "Select a budget change",
 		Templates: changePromptTemplate,
 		Items:     budgetChanges.Changes,
 	}

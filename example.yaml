@@ -1,0 +1,23 @@
+changes:
+  - name: First Pay Period
+    category_groups:
+      - name: Bills
+        categories:
+          - name: "Rent/Mortgage"
+            change: +320
+      - name: Frequent
+        categories:
+          - name: Groceries
+            change: +315
+  - name: Second Pay Period
+    category_groups: 
+      - name: Frequent
+        categories:
+          - name: Transportation
+            change: +29.18
+          - name: Eating Out
+            change: +18.11
+      - name: Goals
+        categories:
+          - name: Vacation
+            change: +2.38

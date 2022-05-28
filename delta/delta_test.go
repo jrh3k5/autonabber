@@ -52,7 +52,7 @@ var _ = Describe("Delta", func() {
 					Name: "Frequent",
 					Changes: []*input.BudgetCategoryChange{
 						input.NewBudgetCategoryChange("Groceries", "+14.58"),
-						input.NewBudgetCategoryChange("Eating Out", "+34.78"),
+						input.NewBudgetCategoryChange("Eating Out", "+34"),
 					},
 				},
 			},
@@ -101,7 +101,7 @@ var _ = Describe("Delta", func() {
 		Expect(eatingOutDelta.InitialCents).To(Equal(int16(76)), "the initial cents for Eating Out should be recorded")
 		eatingOutDollars, eatingOutCents := eatingOutDelta.CalculateDelta()
 		Expect(eatingOutDollars).To(Equal(int64(34)), "the delta for Eating Out dollars should be correct")
-		Expect(eatingOutCents).To(Equal(int16(78)), "the delta for Eating Out cents should be correct")
+		Expect(eatingOutCents).To(Equal(int16(0)), "the delta for Eating Out cents should be correct")
 	})
 })
 

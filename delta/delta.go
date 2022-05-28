@@ -1,6 +1,7 @@
 package delta
 
 import (
+	"fmt"
 	"jrh3k5/autonabber/client/ynab/model"
 	"jrh3k5/autonabber/input"
 )
@@ -61,6 +62,29 @@ func NewDeltas(actual []*model.BudgetCategoryGroup, toApply *input.BudgetChange)
 		deltaGroups = append(deltaGroups, deltaGroup)
 	}
 	return deltaGroups, nil
+}
+
+func PrintDeltas(groups []*BudgetCategoryDeltaGroup) {
+	for _, group := range groups {
+		var nonZeroChanges []*BudgetCategoryDelta
+		for _, change := range group.CategoryDeltas {
+			deltaDollars, deltaCents := change.CalculateDelta()
+			if deltaDollars != 0 || deltaCents != 0 {
+				nonZeroChanges = append(nonZeroChanges, change)
+			}
+		}
+
+		if len(nonZeroChanges) == 0 {
+			// Don't print any groups without changes
+			continue
+		}
+
+		fmt.Printf("%s\n", group.Name)
+		for _, change := range nonZeroChanges {
+			deltaDollars, deltaCents := change.CalculateDelta()
+			fmt.Printf("  %s: $%d.%02d => $%d.%02d (+$%d.%02d)\n", change.Name, change.InitialDollars, change.InitialCents, change.FinalDollars, change.FinalCents, deltaDollars, deltaCents)
+		}
+	}
 }
 
 func getCategoryGroupByName(name string, changes *input.BudgetChange) *input.BudgetCategoryGroup {
