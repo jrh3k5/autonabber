@@ -6,19 +6,6 @@ import (
 	"jrh3k5/autonabber/client/ynab/model"
 )
 
-type budgetsResponse struct {
-	Data *budgetData `json:"data"`
-}
-
-type budgetData struct {
-	Budgets []*budgetDetails `json:"budgets"`
-}
-
-type budgetDetails struct {
-	ID   string `json:"id"`
-	Name string `json:"name"`
-}
-
 func (c *Client) GetBudgets() ([]*model.Budget, error) {
 	httpResponse, err := c.Get("/budgets")
 	if err != nil {

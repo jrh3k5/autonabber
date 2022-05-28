@@ -7,6 +7,7 @@ import (
 	"jrh3k5/autonabber/client/ynab"
 	"jrh3k5/autonabber/client/ynab/http"
 	"jrh3k5/autonabber/client/ynab/model"
+	"jrh3k5/autonabber/input"
 	"os"
 
 	"github.com/manifoldco/promptui"
@@ -23,23 +24,35 @@ func main() {
 
 	appArgs, err := args.GetArgs()
 	if err != nil {
-		logger.Errorf("Unable to parse application arguments: %v", err)
-		os.Exit(1)
+		logger.Fatalf("Unable to parse application arguments: %v", err)
 	}
 
 	client, err := http.NewClient(appArgs.AccessToken)
 	if err != nil {
-		logger.Errorf("Unable to instantiate YNAB client: %v", err)
-		os.Exit(1)
+		logger.Fatalf("Unable to instantiate YNAB client: %v", err)
 	}
 
 	budget, err := getBudget(client)
 	if err != nil {
-		logger.Errorf("Unable to successfully choose a budget: %v", err)
-		os.Exit(1)
+		logger.Fatalf("Unable to successfully choose a budget: %v", err)
 	}
 
 	fmt.Printf("Chosen budget: %s\n", budget.Name)
+
+	budgetCategoryGroups, err := client.GetCategories(budget)
+	if err != nil {
+		logger.Fatalf("Unable to retrieve budget categories: %w", err)
+	}
+
+	model.PrintBudgetCategoryGroups(budgetCategoryGroups)
+
+	_, err = input.ParseInputFile(appArgs.InputFile)
+	if err != nil {
+		logger.Fatalf("Failed to parse input file '%s': %w", appArgs.InputFile, err)
+	}
+	// TODO: calculate delta
+	// TODO: make sure that there's enough in Ready to Assign
+	// TODO: apply changes
 
 	os.Exit(0)
 }
