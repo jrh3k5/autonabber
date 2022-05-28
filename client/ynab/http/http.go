@@ -1,8 +1,10 @@
 package http
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 )
 
@@ -36,20 +38,57 @@ func (c *Client) Get(requestPath string) (*http.Response, error) {
 func (c *Client) GetJSON(requestPath string, result interface{}) error {
 	httpResponse, err := c.Get(requestPath)
 	if err != nil {
-		return fmt.Errorf("failed to invoke request for '%s': %w", requestPath, err)
+		return fmt.Errorf("failed to invoke GET request for '%s': %w", requestPath, err)
 	}
 	defer httpResponse.Body.Close()
 
 	if httpResponse.StatusCode != 200 {
 		errorContainer, err := handleError(httpResponse)
 		if err != nil {
-			return fmt.Errorf("failed to extract error details for request to '%s': %w", requestPath, err)
+			return fmt.Errorf("failed to extract error details for GET request to '%s': %w", requestPath, err)
 		}
 		return errorContainer
 	}
 
 	if err := json.NewDecoder(httpResponse.Body).Decode(result); err != nil {
-		return fmt.Errorf("error decoding response from '%s': %w", requestPath, err)
+		return fmt.Errorf("error decoding response to GET request to '%s': %w", requestPath, err)
+	}
+
+	return nil
+}
+
+// Patch issues a PATCH request to the given request path with the given request body
+func (c *Client) Patch(requestPath string, requestBody io.Reader) (*http.Response, error) {
+	request, err := http.NewRequest("PATCH", baseURL+"/"+requestPath, requestBody)
+	if err != nil {
+		return nil, fmt.Errorf("failed to generate PATCH HTTP request to path '%s': %w", requestPath, err)
+	}
+
+	request.Header.Set("Authorization", "Bearer "+c.accessToken)
+	request.Header.Set("Accept", "application/json")
+	request.Header.Set("Content-Type", "application/json")
+	return c.httpClient.Do(request)
+}
+
+// PatchJSON submits a PATCH request formatted as JSON
+func (c *Client) PatchJSON(requestPath string, requestBody interface{}) error {
+	jsonBytesBuffer := &bytes.Buffer{}
+	if err := json.NewEncoder(jsonBytesBuffer).Encode(requestBody); err != nil {
+		return fmt.Errorf("failed to encode request body to JSON: %w", err)
+	}
+
+	httpResponse, err := c.Patch(requestPath, jsonBytesBuffer)
+	if err != nil {
+		return fmt.Errorf("failed to invoke PATCH request for '%s': %w", requestPath, err)
+	}
+	defer httpResponse.Body.Close()
+
+	if httpResponse.StatusCode != 200 {
+		errorContainer, err := handleError(httpResponse)
+		if err != nil {
+			return fmt.Errorf("failed to extract error details for PATCH request to '%s': %w", requestPath, err)
+		}
+		return errorContainer
 	}
 
 	return nil
