@@ -1,11 +1,15 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"jrh3k5/autonabber/args"
+	"jrh3k5/autonabber/client/ynab"
 	"jrh3k5/autonabber/client/ynab/http"
+	"jrh3k5/autonabber/client/ynab/model"
 	"os"
 
+	"github.com/manifoldco/promptui"
 	"go.uber.org/zap"
 )
 
@@ -29,15 +33,48 @@ func main() {
 		os.Exit(1)
 	}
 
-	budgets, err := client.GetBudgets()
+	budget, err := getBudget(client)
 	if err != nil {
-		logger.Errorf("Unable to retrieve budgets: %v", err)
+		logger.Errorf("Unable to successfully choose a budget: %v", err)
 		os.Exit(1)
 	}
 
-	for _, budget := range budgets {
-		logger.Info("Budget found: " + budget.Name)
-	}
+	fmt.Printf("Chosen budget: %s\n", budget.Name)
 
 	os.Exit(0)
+}
+
+func getBudget(client ynab.Client) (*model.Budget, error) {
+	budgets, err := client.GetBudgets()
+	if err != nil {
+		return nil, fmt.Errorf("failed to get budgets: %w", err)
+	}
+
+	if len(budgets) == 0 {
+		return nil, errors.New("no budgets found; please create a budget before using this tool")
+	}
+
+	if len(budgets) == 1 {
+		return budgets[0], nil
+	}
+
+	budgetPromptTemplate := &promptui.SelectTemplates{
+		Label:    "{{ . }}?",
+		Active:   "🔨 {{ .Name | cyan }}",
+		Inactive: "  {{ .Name }}",
+		Selected: "✔ {{ .Name }}",
+	}
+
+	prompt := promptui.Select{
+		Label:     "Select a budget",
+		Templates: budgetPromptTemplate,
+		Items:     budgets,
+	}
+
+	chosenBudget, _, err := prompt.Run()
+	if err != nil {
+		return nil, fmt.Errorf("failed in prompt for budget selection: %w", err)
+	}
+
+	return budgets[chosenBudget], nil
 }
