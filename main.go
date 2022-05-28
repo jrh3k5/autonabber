@@ -53,11 +53,41 @@ func main() {
 		logger.Fatalf("Failed to generate delta: %w", err)
 	}
 
-	delta.PrintDeltas(deltas)
 	// TODO: make sure that there's enough in Ready to Assign
-	// TODO: apply changes
+
+	appConfirmed, err := confirmApplication(deltas)
+	if err != nil {
+		logger.Fatalf("Failed to get confirmation to apply changes: %w", err)
+	}
+
+	if appConfirmed {
+		// TODO: implement application
+		logger.Info("This would have applied!")
+	}
 
 	os.Exit(0)
+}
+
+func confirmApplication(deltas []*delta.BudgetCategoryDeltaGroup) (bool, error) {
+	delta.PrintDeltas(deltas)
+
+	confirmPrompt := promptui.Prompt{
+		Label: "Do you wish to apply these changes? (yes/no)",
+		Validate: func(input string) error {
+			if input != "yes" && input != "no" {
+				return fmt.Errorf("invalid selection: %s", input)
+			}
+
+			return nil
+		},
+	}
+
+	result, err := confirmPrompt.Run()
+	if err != nil {
+		return false, fmt.Errorf("failed to confirm desire to apply deltas: %w", err)
+	}
+
+	return result == "yes", nil
 }
 
 func getBudget(client ynab.Client) (*model.Budget, error) {
