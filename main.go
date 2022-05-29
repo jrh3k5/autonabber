@@ -3,13 +3,14 @@ package main
 import (
 	"errors"
 	"fmt"
-	"jrh3k5/autonabber/args"
-	"jrh3k5/autonabber/client/ynab"
-	"jrh3k5/autonabber/client/ynab/http"
-	"jrh3k5/autonabber/client/ynab/model"
-	"jrh3k5/autonabber/delta"
-	"jrh3k5/autonabber/input"
 	"os"
+
+	"github.com/jrh3k5/autonabber/args"
+	"github.com/jrh3k5/autonabber/client/ynab"
+	"github.com/jrh3k5/autonabber/client/ynab/http"
+	"github.com/jrh3k5/autonabber/client/ynab/model"
+	"github.com/jrh3k5/autonabber/delta"
+	"github.com/jrh3k5/autonabber/input"
 
 	"github.com/manifoldco/promptui"
 	"go.uber.org/zap"

@@ -2,10 +2,11 @@ package input
 
 import (
 	"fmt"
-	"jrh3k5/autonabber/client/ynab"
-	"jrh3k5/autonabber/client/ynab/model"
 	"regexp"
 	"strconv"
+
+	"github.com/jrh3k5/autonabber/client/ynab"
+	"github.com/jrh3k5/autonabber/client/ynab/model"
 )
 
 var (

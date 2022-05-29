@@ -1,10 +1,10 @@
 package delta_test
 
 import (
-	"jrh3k5/autonabber/client/mock_ynab"
-	"jrh3k5/autonabber/client/ynab/model"
-	"jrh3k5/autonabber/delta"
-	"jrh3k5/autonabber/input"
+	"github.com/jrh3k5/autonabber/client/mock_ynab"
+	"github.com/jrh3k5/autonabber/client/ynab/model"
+	"github.com/jrh3k5/autonabber/delta"
+	"github.com/jrh3k5/autonabber/input"
 
 	"github.com/golang/mock/gomock"
 	. "github.com/onsi/ginkgo/v2"

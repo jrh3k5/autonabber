@@ -3,8 +3,9 @@ package http
 import (
 	"encoding/json"
 	"fmt"
-	"jrh3k5/autonabber/client/ynab/model"
 	"time"
+
+	"github.com/jrh3k5/autonabber/client/ynab/model"
 )
 
 func (c *Client) GetBudgets() ([]*model.Budget, error) {

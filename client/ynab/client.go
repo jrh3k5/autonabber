@@ -1,7 +1,7 @@
 package ynab
 
 import (
-	"jrh3k5/autonabber/client/ynab/model"
+	"github.com/jrh3k5/autonabber/client/ynab/model"
 )
 
 // Client is a definition of interactions that can be made with YNAB

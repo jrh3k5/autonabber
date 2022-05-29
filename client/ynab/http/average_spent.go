@@ -2,9 +2,10 @@ package http
 
 import (
 	"fmt"
-	"jrh3k5/autonabber/client/ynab/model"
 	"math"
 	"time"
+
+	"github.com/jrh3k5/autonabber/client/ynab/model"
 )
 
 func (c *Client) GetMonthlyAverageSpent(budget *model.Budget, category *model.BudgetCategory, monthLookback int) (int64, int16, error) {

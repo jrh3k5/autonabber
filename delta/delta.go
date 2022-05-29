@@ -2,9 +2,10 @@ package delta
 
 import (
 	"fmt"
-	"jrh3k5/autonabber/client/ynab"
-	"jrh3k5/autonabber/client/ynab/model"
-	"jrh3k5/autonabber/input"
+
+	"github.com/jrh3k5/autonabber/client/ynab"
+	"github.com/jrh3k5/autonabber/client/ynab/model"
+	"github.com/jrh3k5/autonabber/input"
 )
 
 type BudgetCategoryDeltaGroup struct {

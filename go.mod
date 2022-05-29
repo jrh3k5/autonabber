@@ -1,4 +1,4 @@
-module jrh3k5/autonabber
+module github.com/jrh3k5/autonabber
 
 go 1.18
 
