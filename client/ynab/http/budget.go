@@ -37,3 +37,19 @@ func (c *Client) GetBudgets() ([]*model.Budget, error) {
 	}
 	return budgets, nil
 }
+
+func (c *Client) SetBudget(budget *model.Budget, category *model.BudgetCategory, newDollars int64, newCents int16) error {
+	budgetedMillidollars := newDollars*1000 + int64(newCents)*100
+	requestPath := fmt.Sprintf("/budgets/%s/months/current/categories/%s", budget.ID, category.ID)
+	requestBody := &categoryPatchRequest{
+		Category: &patchedCategory{
+			Budgeted: budgetedMillidollars,
+		},
+	}
+
+	if err := c.PatchJSON(requestPath, requestBody); err != nil {
+		return fmt.Errorf("failed to update category '%s' in budget '%s' to $%d.%02d: %w", category.Name, budget.Name, newDollars, newCents, err)
+	}
+
+	return nil
+}

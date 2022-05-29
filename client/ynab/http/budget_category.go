@@ -21,6 +21,7 @@ func (c *Client) GetCategories(budget *model.Budget) ([]*model.BudgetCategoryGro
 				budgetedMillidollars := responseBudgetCategory.Budgeted % 1000
 				budgetedDollars := (responseBudgetCategory.Budgeted - budgetedMillidollars) / 1000
 				budgetCategory := &model.BudgetCategory{
+					ID:              responseBudgetCategory.ID,
 					Name:            responseBudgetCategory.Name,
 					BudgetedDollars: budgetedDollars,
 					BudgetedCents:   int16(budgetedMillidollars / 10),

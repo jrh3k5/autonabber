@@ -12,7 +12,7 @@ type BudgetCategoryDeltaGroup struct {
 }
 
 type BudgetCategoryDelta struct {
-	Name           string
+	BudgetCategory *model.BudgetCategory
 	InitialDollars int64
 	InitialCents   int16
 	FinalDollars   int64
@@ -33,6 +33,12 @@ func (bcd *BudgetCategoryDelta) CalculateDelta() (int64, int16) {
 	return totalDiffDollars, int16(totalDiffCents)
 }
 
+// HasChanges determines if this delta has any actual changes to be applied
+func (bcd *BudgetCategoryDelta) HasChanges() bool {
+	dollars, cents := bcd.CalculateDelta()
+	return dollars != 0 || cents != 0
+}
+
 func NewDeltas(actual []*model.BudgetCategoryGroup, toApply *input.BudgetChange) ([]*BudgetCategoryDeltaGroup, error) {
 	var deltaGroups []*BudgetCategoryDeltaGroup
 	for _, actualGroup := range actual {
@@ -42,7 +48,7 @@ func NewDeltas(actual []*model.BudgetCategoryGroup, toApply *input.BudgetChange)
 		}
 		for _, actualCategory := range actualGroup.Categories {
 			deltaCategory := &BudgetCategoryDelta{
-				Name:           actualCategory.Name,
+				BudgetCategory: actualCategory,
 				InitialDollars: actualCategory.BudgetedDollars,
 				InitialCents:   actualCategory.BudgetedCents,
 				FinalDollars:   actualCategory.BudgetedDollars,
@@ -68,8 +74,7 @@ func PrintDeltas(groups []*BudgetCategoryDeltaGroup) {
 	for _, group := range groups {
 		var nonZeroChanges []*BudgetCategoryDelta
 		for _, change := range group.CategoryDeltas {
-			deltaDollars, deltaCents := change.CalculateDelta()
-			if deltaDollars != 0 || deltaCents != 0 {
+			if change.HasChanges() {
 				nonZeroChanges = append(nonZeroChanges, change)
 			}
 		}
@@ -82,7 +87,7 @@ func PrintDeltas(groups []*BudgetCategoryDeltaGroup) {
 		fmt.Printf("%s\n", group.Name)
 		for _, change := range nonZeroChanges {
 			deltaDollars, deltaCents := change.CalculateDelta()
-			fmt.Printf("  %s: $%d.%02d => $%d.%02d (+$%d.%02d)\n", change.Name, change.InitialDollars, change.InitialCents, change.FinalDollars, change.FinalCents, deltaDollars, deltaCents)
+			fmt.Printf("  %s: $%d.%02d => $%d.%02d (+$%d.%02d)\n", change.BudgetCategory.Name, change.InitialDollars, change.InitialCents, change.FinalDollars, change.FinalCents, deltaDollars, deltaCents)
 		}
 	}
 }

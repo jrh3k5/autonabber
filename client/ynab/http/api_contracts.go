@@ -27,6 +27,15 @@ type budgetCategoryGroup struct {
 }
 
 type budgetCategory struct {
+	ID       string `json:"id"`
 	Name     string `json:"name"`
 	Budgeted int64  `json:"budgeted"`
+}
+
+type categoryPatchRequest struct {
+	Category *patchedCategory `json:"category"`
+}
+
+type patchedCategory struct {
+	Budgeted int64 `json:"budgeted"`
 }

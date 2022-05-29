@@ -61,8 +61,18 @@ func main() {
 	}
 
 	if appConfirmed {
-		// TODO: implement application
-		logger.Info("This would have applied!")
+		for _, delta := range deltas {
+			for _, change := range delta.CategoryDeltas {
+				if change.HasChanges() {
+					if err := client.SetBudget(budget, change.BudgetCategory, change.FinalDollars, change.FinalCents); err != nil {
+						logger.Fatalf("Failed to set budget category '%s' under budget '%s' to $%d.%02d: %w", change.BudgetCategory.Name, budget.Name, change.FinalDollars, change.FinalCents, err)
+					}
+				}
+			}
+		}
+
+		// TODO: output how much was applied
+		fmt.Println("Application successful!")
 	}
 
 	os.Exit(0)

@@ -117,7 +117,7 @@ func getGroupByName(name string, groups []*delta.BudgetCategoryDeltaGroup) *delt
 
 func getDeltaByName(name string, changes []*delta.BudgetCategoryDelta) *delta.BudgetCategoryDelta {
 	for _, change := range changes {
-		if name == change.Name {
+		if name == change.BudgetCategory.Name {
 			return change
 		}
 	}

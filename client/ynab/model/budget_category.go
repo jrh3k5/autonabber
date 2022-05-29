@@ -10,6 +10,7 @@ type BudgetCategoryGroup struct {
 }
 
 type BudgetCategory struct {
+	ID              string
 	Name            string
 	BudgetedDollars int64
 	BudgetedCents   int16

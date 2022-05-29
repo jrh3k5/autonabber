@@ -46,8 +46,11 @@ func (c *Client) GetJSON(requestPath string, result interface{}) error {
 		errorContainer, err := handleError(httpResponse)
 		if err != nil {
 			return fmt.Errorf("failed to extract error details for GET request to '%s': %w", requestPath, err)
+		} else if errorContainer != nil {
+			return fmt.Errorf("failed to issue GET request to '%s': %w", requestPath, errorContainer)
 		}
-		return errorContainer
+
+		return fmt.Errorf("unexpected status in response to GET request to '%s': %d", requestPath, httpResponse.StatusCode)
 	}
 
 	if err := json.NewDecoder(httpResponse.Body).Decode(result); err != nil {
@@ -87,14 +90,18 @@ func (c *Client) PatchJSON(requestPath string, requestBody interface{}) error {
 		errorContainer, err := handleError(httpResponse)
 		if err != nil {
 			return fmt.Errorf("failed to extract error details for PATCH request to '%s': %w", requestPath, err)
+		} else if errorContainer != nil {
+			return fmt.Errorf("failed to issue PATCH request to '%s': %w", requestPath, errorContainer)
 		}
-		return errorContainer
+
+		return fmt.Errorf("unexpected status in response to PATCH request to '%s': %d", requestPath, httpResponse.StatusCode)
 	}
 
 	return nil
 }
 
 // handleError is used for handling a non-OK HTTP response and attempting to get the error details out of it
+// The returned *ErrorContainer can be nil if the given response is nil if the response has no body
 func handleError(httpResponse *http.Response) (*ErrorContainer, error) {
 	var errorContainer *ErrorContainer
 	if err := json.NewDecoder(httpResponse.Body).Decode(&errorContainer); err != nil {

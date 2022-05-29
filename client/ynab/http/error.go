@@ -3,7 +3,7 @@ package http
 import "fmt"
 
 type ErrorContainer struct {
-	apiError *APIError `json:"error"`
+	APIError *APIError `json:"error"`
 }
 
 type APIError struct {
@@ -13,9 +13,9 @@ type APIError struct {
 }
 
 func (ec *ErrorContainer) Error() string {
-	if ec.Error == nil {
+	if ec.APIError == nil {
 		return "<no error details available from API response>"
 	}
 
-	return fmt.Sprint("error ID: %s; error name: %s; error detail: %s", ec.apiError.ID, ec.apiError.Name, ec.apiError.Detail)
+	return fmt.Sprintf("error ID: %s; error name: %s; error detail: %s", ec.APIError.ID, ec.APIError.Name, ec.APIError.Detail)
 }
