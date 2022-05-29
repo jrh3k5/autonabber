@@ -53,21 +53,21 @@ func main() {
 		logger.Fatalf("Failed to generate delta: %w", err)
 	}
 
-	doAssignment, err := checkAssignability(budgetCategoryGroups, deltas)
-	if err != nil {
-		logger.Fatalf("Failed to check availability of assignable funds: %w", err)
-	}
-
-	if !doAssignment {
-		fmt.Println("Application has been cancelled")
-	}
-
 	appConfirmed, err := confirmApplication(deltas)
 	if err != nil {
 		logger.Fatalf("Failed to get confirmation to apply changes: %w", err)
 	}
 
 	if appConfirmed {
+		doAssignment, err := checkAssignability(budgetCategoryGroups, deltas)
+		if err != nil {
+			logger.Fatalf("Failed to check availability of assignable funds: %w", err)
+		}
+
+		if !doAssignment {
+			fmt.Println("Application has been cancelled")
+		}
+
 		var nonZeroChanges []*delta.BudgetCategoryDelta
 
 		for _, delta := range deltas {
@@ -108,7 +108,7 @@ func checkAssignability(groups []*model.BudgetCategoryGroup, deltaGroups []*delt
 
 	if changeTotal > assignableTotal {
 		confirmPrompt := &promptui.Prompt{
-			Label:    fmt.Sprintf("Your total to be assigned ($%d.%02d) is greater than your amount ready for assignment ($%d.%02d). Do you wish to continue the application?", changeDollars, changeCents, assignableDollars, assignableCents),
+			Label:    fmt.Sprintf("Your total to be assigned ($%d.%02d) is greater than your amount ready for assignment ($%d.%02d). Do you wish to continue the application? (yes/no)", changeDollars, changeCents, assignableDollars, assignableCents),
 			Validate: validateYesNo,
 		}
 
@@ -186,6 +186,14 @@ func getBudgetChanges(filePath string) (*input.BudgetChange, error) {
 	budgetChanges, err := input.ParseInputFile(filePath)
 	if err != nil {
 		return nil, fmt.Errorf("unable to parse input file '%s': %w", filePath, err)
+	}
+
+	if len(budgetChanges.Changes) == 0 {
+		return nil, errors.New("at least one change set must be supplied")
+	}
+
+	if len(budgetChanges.Changes) == 1 {
+		return budgetChanges.Changes[0], nil
 	}
 
 	changePromptTemplate := &promptui.SelectTemplates{
