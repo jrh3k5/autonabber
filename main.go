@@ -43,6 +43,8 @@ func main() {
 		logger.Fatalf("Unable to retrieve budget categories: %w", err)
 	}
 
+	model.PrintBudgetCategoryGroups(budgetCategoryGroups)
+
 	budgetChange, err := getBudgetChanges(appArgs.InputFile)
 	if err != nil {
 		logger.Fatalf("Failed to select budget change: %w", err)

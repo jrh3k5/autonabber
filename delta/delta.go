@@ -39,6 +39,27 @@ func (bcd *BudgetCategoryDelta) HasChanges() bool {
 	return dollars != 0 || cents != 0
 }
 
+// SumChanges calculates the sum of all changes across the given groups
+// It returns the dollars and cents of the changes
+func SumChanges(groups []*BudgetCategoryDeltaGroup) (int64, int16) {
+	diffDollars := int64(0)
+	diffCents := int64(0)
+
+	for _, group := range groups {
+		for _, category := range group.CategoryDeltas {
+			catDollars, catCents := category.CalculateDelta()
+			diffDollars += int64(catDollars)
+			diffCents += int64(catCents)
+		}
+	}
+
+	totalDiff := diffDollars*100 + diffCents
+	finalCents := totalDiff % 100
+	finalDollars := (totalDiff - finalCents) / 100
+
+	return finalDollars, int16(finalCents)
+}
+
 func NewDeltas(actual []*model.BudgetCategoryGroup, toApply *input.BudgetChange) ([]*BudgetCategoryDeltaGroup, error) {
 	var deltaGroups []*BudgetCategoryDeltaGroup
 	for _, actualGroup := range actual {
