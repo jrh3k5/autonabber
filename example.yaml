@@ -9,6 +9,10 @@ changes:
         categories:
           - name: Groceries
             change: +315
+      - name: Annual Costs
+        categories:
+          - name: YNAB Subscription
+            change: +7
   - name: Second Pay Period
     category_groups: 
       - name: Frequent

@@ -15,6 +15,10 @@ import (
 	"go.uber.org/zap"
 )
 
+// TODO: add validation of input in model.go
+// TODO: warn if any of the inputs are not present in the budget to which they are being applied
+// TODO: add support for parseable average-spent-##m
+
 func main() {
 	_l, err := zap.NewDevelopment()
 	if err != nil {
@@ -48,6 +52,16 @@ func main() {
 		logger.Fatalf("Failed to select budget change: %w", err)
 	}
 
+	ignoreMismatches, err := warnApplicationMismatches(budgetCategoryGroups, budgetChange.CategoryGroups)
+	if err != nil {
+		logger.Fatalf("Failed to check for and confirm acceptance of mismatches between input file and budget: %w", err)
+	}
+
+	if !ignoreMismatches {
+		fmt.Println("Application has been cancelled")
+		os.Exit(0)
+	}
+
 	deltas, err := delta.NewDeltas(budgetCategoryGroups, budgetChange)
 	if err != nil {
 		logger.Fatalf("Failed to generate delta: %w", err)
@@ -66,23 +80,23 @@ func main() {
 
 		if !doAssignment {
 			fmt.Println("Application has been cancelled")
-		}
+		} else {
+			var nonZeroChanges []*delta.BudgetCategoryDelta
 
-		var nonZeroChanges []*delta.BudgetCategoryDelta
-
-		for _, delta := range deltas {
-			for _, change := range delta.CategoryDeltas {
-				if change.HasChanges() {
-					nonZeroChanges = append(nonZeroChanges, change)
-					if err := client.SetBudget(budget, change.BudgetCategory, change.FinalDollars, change.FinalCents); err != nil {
-						logger.Fatalf("Failed to set budget category '%s' under budget '%s' to $%d.%02d: %w", change.BudgetCategory.Name, budget.Name, change.FinalDollars, change.FinalCents, err)
+			for _, delta := range deltas {
+				for _, change := range delta.CategoryDeltas {
+					if change.HasChanges() {
+						nonZeroChanges = append(nonZeroChanges, change)
+						if err := client.SetBudget(budget, change.BudgetCategory, change.FinalDollars, change.FinalCents); err != nil {
+							logger.Fatalf("Failed to set budget category '%s' under budget '%s' to $%d.%02d: %w", change.BudgetCategory.Name, budget.Name, change.FinalDollars, change.FinalCents, err)
+						}
 					}
 				}
 			}
-		}
 
-		deltaDollars, deltaCents := delta.SumChanges(nonZeroChanges)
-		fmt.Printf("Added $%d.%02d across %d categories\n", deltaDollars, deltaCents, len(nonZeroChanges))
+			deltaDollars, deltaCents := delta.SumChanges(nonZeroChanges)
+			fmt.Printf("Added $%d.%02d across %d categories\n", deltaDollars, deltaCents, len(nonZeroChanges))
+		}
 	} else {
 		fmt.Println("Application has been cancelled")
 	}
@@ -215,4 +229,71 @@ func getBudgetChanges(filePath string) (*input.BudgetChange, error) {
 	}
 
 	return budgetChanges.Changes[chosenBudgetChange], nil
+}
+
+func warnApplicationMismatches(budgetCategoryGroups []*model.BudgetCategoryGroup, inputGroups []*input.BudgetCategoryGroup) (bool, error) {
+	var missingGroups []string
+	missingCategoriesByGroupName := make(map[string][]string)
+
+	for _, inputCategory := range inputGroups {
+		var matchingBudgetGroup *model.BudgetCategoryGroup
+		for _, budgetGroup := range budgetCategoryGroups {
+			if budgetGroup.Name == inputCategory.Name {
+				matchingBudgetGroup = budgetGroup
+				break
+			}
+		}
+
+		if matchingBudgetGroup == nil {
+			missingGroups = append(missingGroups, inputCategory.Name)
+			continue
+		}
+
+		budgetCategoriesByName := make(map[string]*model.BudgetCategory)
+		for _, budgetCategory := range matchingBudgetGroup.Categories {
+			budgetCategoriesByName[budgetCategory.Name] = budgetCategory
+		}
+
+		for _, inputCategory := range inputCategory.Changes {
+			if _, categoryExists := budgetCategoriesByName[inputCategory.Name]; !categoryExists {
+				var missingCategories []string
+				if existingCategories, ok := missingCategoriesByGroupName[matchingBudgetGroup.Name]; ok {
+					missingCategories = existingCategories
+				}
+				missingCategories = append(missingCategories, inputCategory.Name)
+				missingCategoriesByGroupName[matchingBudgetGroup.Name] = missingCategories
+			}
+		}
+	}
+
+	// if there are no mistmatches, we can continue on
+	if len(missingGroups) == 0 && len(missingCategoriesByGroupName) == 0 {
+		return true, nil
+	}
+
+	fmt.Printf("WARNING: %d categories were in the given file that do not exist and/or %d categories specified in the input file do not exist in the budget:\n", len(missingGroups), len(missingCategoriesByGroupName))
+	for _, missingGroup := range missingGroups {
+		fmt.Printf("  Missing category group: %s\n", missingGroup)
+	}
+
+	for categoryGroupName, categories := range missingCategoriesByGroupName {
+		fmt.Printf("  Category group with missing category/categories: %s\n", categoryGroupName)
+		for _, category := range categories {
+			fmt.Printf("    Missing category: %s\n", category)
+		}
+	}
+
+	fmt.Println("None of the changes specified in the above category groups and categories will be applied to the budget.")
+
+	continuePrompt := promptui.Prompt{
+		Label:    "Do you wish to continue? (yes/no)",
+		Validate: validateYesNo,
+	}
+
+	promptResult, err := continuePrompt.Run()
+	if err != nil {
+		return false, fmt.Errorf("failed to prompt user to confirm continuing with missing category groups and/or categories: %w", err)
+	}
+
+	return promptResult == "yes", nil
 }
