@@ -69,3 +69,9 @@ To run the tests, run:
 ```
 make test
 ```
+
+To compile artifacts for release, run:
+
+```
+make release
+```
