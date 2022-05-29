@@ -12,3 +12,7 @@ run-ginkgo:
 
 compile-go:
 	go build
+
+release:
+	env GOOS=darwin GOARCH=amd64 go build -o dist/darwin/amd64/autonabber
+	env GOOS=windows GOARCH=amd64 go build -o dist/windows/amd64/autonabber.exe
