@@ -4,9 +4,16 @@ import (
 	"encoding/json"
 	"fmt"
 	"jrh3k5/autonabber/client/ynab/model"
+	"time"
 )
 
 func (c *Client) GetBudgets() ([]*model.Budget, error) {
+	cacheKey := "/budgets"
+
+	if cached, cacheFound := c.ynabCache.Get(cacheKey); cacheFound {
+		return cached.([]*model.Budget), nil
+	}
+
 	httpResponse, err := c.Get("/budgets")
 	if err != nil {
 		return nil, fmt.Errorf("failed to invoke request for /budgets: %w", err)
@@ -35,6 +42,9 @@ func (c *Client) GetBudgets() ([]*model.Budget, error) {
 			})
 		}
 	}
+
+	c.ynabCache.Add(cacheKey, budgets, time.Hour)
+
 	return budgets, nil
 }
 
@@ -50,6 +60,10 @@ func (c *Client) SetBudget(budget *model.Budget, category *model.BudgetCategory,
 	if err := c.PatchJSON(requestPath, requestBody); err != nil {
 		return fmt.Errorf("failed to update category '%s' in budget '%s' to $%d.%02d: %w", category.Name, budget.Name, newDollars, newCents, err)
 	}
+
+	// Because the category groups have been changed, evict the stale data from the cache
+	categoryGroupsCacheKey := buildCategoryGroupsCacheKey(budget)
+	c.ynabCache.Delete(categoryGroupsCacheKey)
 
 	return nil
 }

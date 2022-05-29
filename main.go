@@ -16,7 +16,6 @@ import (
 )
 
 // TODO: add validation of input in model.go
-// TODO: warn if any of the inputs are not present in the budget to which they are being applied
 // TODO: add support for parseable average-spent-##m
 
 func main() {

@@ -3,9 +3,16 @@ package http
 import (
 	"fmt"
 	"jrh3k5/autonabber/client/ynab/model"
+	"time"
 )
 
 func (c *Client) GetCategories(budget *model.Budget) ([]*model.BudgetCategoryGroup, error) {
+	cacheKey := buildCategoryGroupsCacheKey(budget)
+
+	if cached, cacheFound := c.ynabCache.Get(cacheKey); cacheFound {
+		return cached.([]*model.BudgetCategoryGroup), nil
+	}
+
 	var budgetCategoriesResponse *budgetCategoriesResponse
 	if err := c.GetJSON(fmt.Sprintf("/budgets/%s/categories", budget.ID), &budgetCategoriesResponse); err != nil {
 		return nil, fmt.Errorf("failed to get categories for budget ID '%s': %w", budget.ID, err)
@@ -31,5 +38,12 @@ func (c *Client) GetCategories(budget *model.Budget) ([]*model.BudgetCategoryGro
 			budgetCategoryGroups = append(budgetCategoryGroups, budgetCategoryGroup)
 		}
 	}
+
+	c.ynabCache.Add(cacheKey, budgetCategoryGroups, time.Hour)
+
 	return budgetCategoryGroups, nil
+}
+
+func buildCategoryGroupsCacheKey(budget *model.Budget) string {
+	return fmt.Sprintf("budgets/%s/categoryGroups", budget.ID)
 }

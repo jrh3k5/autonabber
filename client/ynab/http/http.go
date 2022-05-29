@@ -6,6 +6,9 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"time"
+
+	"github.com/patrickmn/go-cache"
 )
 
 const baseURL = "https://api.youneedabudget.com/v1"
@@ -13,12 +16,14 @@ const baseURL = "https://api.youneedabudget.com/v1"
 type Client struct {
 	httpClient  *http.Client
 	accessToken string
+	ynabCache   cache.Cache
 }
 
 func NewClient(accessToken string) (*Client, error) {
 	return &Client{
 		accessToken: accessToken,
 		httpClient:  &http.Client{},
+		ynabCache:   *cache.New(time.Hour, 2*time.Hour),
 	}, nil
 }
 
