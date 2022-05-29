@@ -28,7 +28,10 @@ func ParseInputFile(filePath string) (*BudgetChanges, error) {
 				Name: serGroup.Name,
 			}
 			for _, serCategory := range serGroup.Categories {
-				category := NewBudgetCategoryChange(serCategory.Name, serCategory.Change)
+				category, err := NewBudgetCategoryChange(serCategory.Name, serCategory.Change)
+				if err != nil {
+					return nil, fmt.Errorf("unable to create change for budget category '%s': %w", serCategory.Name, err)
+				}
 				categoryGroup.Changes = append(categoryGroup.Changes, category)
 			}
 			change.CategoryGroups = append(change.CategoryGroups, categoryGroup)

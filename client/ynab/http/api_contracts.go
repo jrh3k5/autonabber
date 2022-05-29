@@ -39,3 +39,16 @@ type categoryPatchRequest struct {
 type patchedCategory struct {
 	Budgeted int64 `json:"budgeted"`
 }
+
+type transactionsContainer struct {
+	Data *transactions `json:"data"`
+}
+
+type transactions struct {
+	Transactions []*transaction `json:"transactions"`
+}
+
+type transaction struct {
+	Date   string `json:"date"`
+	Amount int64  `json:"amount"`
+}

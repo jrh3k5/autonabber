@@ -15,7 +15,6 @@ import (
 	"go.uber.org/zap"
 )
 
-// TODO: add validation of input in model.go
 // TODO: add support for parseable average-spent-##m
 
 func main() {
@@ -61,7 +60,7 @@ func main() {
 		os.Exit(0)
 	}
 
-	deltas, err := delta.NewDeltas(budgetCategoryGroups, budgetChange)
+	deltas, err := delta.NewDeltas(client, budget, budgetCategoryGroups, budgetChange)
 	if err != nil {
 		logger.Fatalf("Failed to generate delta: %w", err)
 	}

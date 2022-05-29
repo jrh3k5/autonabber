@@ -1,9 +1,15 @@
 package ynab
 
-import "jrh3k5/autonabber/client/ynab/model"
+import (
+	"jrh3k5/autonabber/client/ynab/model"
+)
 
 // Client is a definition of interactions that can be made with YNAB
 type Client interface {
+	// GetAverageSpent gets the average amount spent each month in the given category over the past monthLookback months
+	// It returns the dollars and cents of the average
+	GetMonthlyAverageSpent(budget *model.Budget, category *model.BudgetCategory, monthLookback int) (int64, int16, error)
+
 	// GetBudgets gets all currently-available budgets
 	GetBudgets() ([]*model.Budget, error)
 

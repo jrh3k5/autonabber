@@ -1,15 +1,31 @@
 package delta_test
 
 import (
+	"jrh3k5/autonabber/client/mock_ynab"
 	"jrh3k5/autonabber/client/ynab/model"
 	"jrh3k5/autonabber/delta"
 	"jrh3k5/autonabber/input"
 
+	"github.com/golang/mock/gomock"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 )
 
 var _ = Describe("Delta", func() {
+	var mockController *gomock.Controller
+	var ynabClient *mock_ynab.MockClient
+
+	BeforeEach(func() {
+		mockController = gomock.NewController(GinkgoT())
+		ynabClient = mock_ynab.NewMockClient(mockController)
+	})
+
+	AfterEach(func() {
+		if mockController != nil {
+			mockController.Finish()
+		}
+	})
+
 	It("should generate a delta", func() {
 		actual := []*model.BudgetCategoryGroup{
 			{
@@ -46,19 +62,25 @@ var _ = Describe("Delta", func() {
 			},
 		}
 
+		groceriesChange, err := input.NewBudgetCategoryChange("Groceries", "+14.58")
+		Expect(err).To(BeNil(), "creating the Groceries change should not fail")
+
+		eatingOutChange, err := input.NewBudgetCategoryChange("Eating Out", "+34")
+		Expect(err).To(BeNil(), "creating the Eating Out change should not fail")
+
 		toApply := &input.BudgetChange{
 			CategoryGroups: []*input.BudgetCategoryGroup{
 				{
 					Name: "Frequent",
 					Changes: []*input.BudgetCategoryChange{
-						input.NewBudgetCategoryChange("Groceries", "+14.58"),
-						input.NewBudgetCategoryChange("Eating Out", "+34"),
+						groceriesChange,
+						eatingOutChange,
 					},
 				},
 			},
 		}
 
-		delta, err := delta.NewDeltas(actual, toApply)
+		delta, err := delta.NewDeltas(ynabClient, &model.Budget{}, actual, toApply)
 		Expect(err).To(BeNil(), "the delta formulation should not have failed")
 		Expect(delta).To(HaveLen(2), "the delta should have all of the category groups given, even if not all have changes to apply")
 
@@ -102,6 +124,57 @@ var _ = Describe("Delta", func() {
 		eatingOutDollars, eatingOutCents := eatingOutDelta.CalculateDelta()
 		Expect(eatingOutDollars).To(Equal(int64(34)), "the delta for Eating Out dollars should be correct")
 		Expect(eatingOutCents).To(Equal(int16(0)), "the delta for Eating Out cents should be correct")
+	})
+
+	Context("for monthly average expenditures", func() {
+		It("should apply the returned average to the initial value", func() {
+			budget := &model.Budget{
+				ID: "test-budget-id",
+			}
+
+			budgetCategory := &model.BudgetCategory{
+				ID:              "test-budget-category-ID",
+				Name:            "Groceries",
+				BudgetedDollars: 15,
+				BudgetedCents:   89,
+			}
+			actual := []*model.BudgetCategoryGroup{
+				{
+					Name: "Frequent",
+					Categories: []*model.BudgetCategory{
+						budgetCategory,
+					},
+				},
+			}
+
+			groceriesChange, err := input.NewBudgetCategoryChange("Groceries", "+average-spent-9m")
+			Expect(err).To(BeNil(), "creating the groceries change should not fail")
+			toApply := &input.BudgetChange{
+				CategoryGroups: []*input.BudgetCategoryGroup{
+					{
+						Name: "Frequent",
+						Changes: []*input.BudgetCategoryChange{
+							groceriesChange,
+						},
+					},
+				},
+			}
+
+			averageDollars := int64(35)
+			averageCents := int16(28)
+			ynabClient.EXPECT().GetMonthlyAverageSpent(gomock.Eq(budget), gomock.Eq(budgetCategory), gomock.Eq(9)).Return(averageDollars, averageCents, nil)
+
+			delta, err := delta.NewDeltas(ynabClient, budget, actual, toApply)
+			Expect(err).To(BeNil(), "the delta formulation should not have failed")
+			Expect(delta).To(HaveLen(1), "the delta should have the given budget categories")
+
+			frequentGrouping := delta[0]
+			Expect(frequentGrouping.CategoryDeltas).To(HaveLen(1), "there should be a groceries delta")
+
+			deltaDollars, deltaCents := frequentGrouping.CategoryDeltas[0].CalculateDelta()
+			Expect(deltaDollars).To(Equal(averageDollars), "the dollar delta should be equal to the average dollars spent")
+			Expect(deltaCents).To(Equal(averageCents), "the cents delta should be equal to the average cents spent")
+		})
 	})
 })
 

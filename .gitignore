@@ -19,3 +19,6 @@
 
 # Ignore compiled artifact
 autonabber
+
+# Ignore generated mocks
+client/mock_ynab

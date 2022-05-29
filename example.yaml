@@ -12,7 +12,7 @@ changes:
       - name: Annual Costs
         categories:
           - name: YNAB Subscription
-            change: +7
+            change: +average-spent-12m
   - name: Second Pay Period
     category_groups: 
       - name: Frequent

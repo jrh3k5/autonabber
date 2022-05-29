@@ -2,6 +2,7 @@ package delta
 
 import (
 	"fmt"
+	"jrh3k5/autonabber/client/ynab"
 	"jrh3k5/autonabber/client/ynab/model"
 	"jrh3k5/autonabber/input"
 )
@@ -58,7 +59,7 @@ func SumChanges(deltas []*BudgetCategoryDelta) (int64, int16) {
 	return finalDollars, int16(finalCents)
 }
 
-func NewDeltas(actual []*model.BudgetCategoryGroup, toApply *input.BudgetChange) ([]*BudgetCategoryDeltaGroup, error) {
+func NewDeltas(client ynab.Client, budget *model.Budget, actual []*model.BudgetCategoryGroup, toApply *input.BudgetChange) ([]*BudgetCategoryDeltaGroup, error) {
 	var deltaGroups []*BudgetCategoryDeltaGroup
 	for _, actualGroup := range actual {
 		deltaCategoryGroup := getCategoryGroupByName(actualGroup.Name, toApply)
@@ -76,7 +77,10 @@ func NewDeltas(actual []*model.BudgetCategoryGroup, toApply *input.BudgetChange)
 
 			if deltaCategoryGroup != nil {
 				if change := getChangeByName(actualCategory.Name, deltaCategoryGroup.Changes); change != nil {
-					newDollars, newCents := change.ApplyDelta(actualCategory.BudgetedDollars, actualCategory.BudgetedCents)
+					newDollars, newCents, err := change.ApplyDelta(client, budget, actualCategory, actualCategory.BudgetedDollars, actualCategory.BudgetedCents)
+					if err != nil {
+						return nil, fmt.Errorf("failed to apply change for budget category '%s' in grouping '%s': %w", deltaCategoryGroup.Name, change.Name, err)
+					}
 					deltaCategory.FinalDollars = newDollars
 					deltaCategory.FinalCents = newCents
 				}

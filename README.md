@@ -49,15 +49,23 @@ changes
 The change operation can be one of the following:
 
 * **Addition**: you can specify a change operation of `+##.##` to indicate by how much the budgeted balance for the category should be increased
+* **Addition of Average Spent**: you can specify a change operation of `+average-spent-#m` to apply the monthly average spent (rounding up) in that category as an addition to the budgeted amount
 
 ## Development
 
 This application has the following prerequisites:
 
 * Go >= 1.18.0
+* [gomock](https://github.com/golang/mock)
 
 To build the application, run:
 
 ```
 make build
+```
+
+To run the tests, run:
+
+```
+make test
 ```
