@@ -43,8 +43,6 @@ func main() {
 		logger.Fatalf("Unable to retrieve budget categories: %w", err)
 	}
 
-	model.PrintBudgetCategoryGroups(budgetCategoryGroups)
-
 	budgetChange, err := getBudgetChanges(appArgs.InputFile)
 	if err != nil {
 		logger.Fatalf("Failed to select budget change: %w", err)
@@ -55,7 +53,14 @@ func main() {
 		logger.Fatalf("Failed to generate delta: %w", err)
 	}
 
-	// TODO: make sure that there's enough in Ready to Assign
+	doAssignment, err := checkAssignability(budgetCategoryGroups, deltas)
+	if err != nil {
+		logger.Fatalf("Failed to check availability of assignable funds: %w", err)
+	}
+
+	if !doAssignment {
+		fmt.Println("Application has been cancelled")
+	}
 
 	appConfirmed, err := confirmApplication(deltas)
 	if err != nil {
@@ -63,9 +68,12 @@ func main() {
 	}
 
 	if appConfirmed {
+		var nonZeroChanges []*delta.BudgetCategoryDelta
+
 		for _, delta := range deltas {
 			for _, change := range delta.CategoryDeltas {
 				if change.HasChanges() {
+					nonZeroChanges = append(nonZeroChanges, change)
 					if err := client.SetBudget(budget, change.BudgetCategory, change.FinalDollars, change.FinalCents); err != nil {
 						logger.Fatalf("Failed to set budget category '%s' under budget '%s' to $%d.%02d: %w", change.BudgetCategory.Name, budget.Name, change.FinalDollars, change.FinalCents, err)
 					}
@@ -73,25 +81,62 @@ func main() {
 			}
 		}
 
-		// TODO: output how much was applied
-		fmt.Println("Application successful!")
+		deltaDollars, deltaCents := delta.SumChanges(nonZeroChanges)
+		fmt.Printf("Added $%d.%02d across %d categories\n", deltaDollars, deltaCents, len(nonZeroChanges))
+	} else {
+		fmt.Println("Application has been cancelled")
 	}
 
 	os.Exit(0)
+}
+
+// checkAssignability checks to see if the total of the changes to be applied exceeds the amount available for assignment
+// It returns true if either the user has chosen to continue or there is enough to be assigned; false if not and the application should be canceled
+func checkAssignability(groups []*model.BudgetCategoryGroup, deltaGroups []*delta.BudgetCategoryDeltaGroup) (bool, error) {
+	assignableDollars, assignableCents := model.GetReadyToAssign(groups)
+
+	var deltas []*delta.BudgetCategoryDelta
+	for _, group := range deltaGroups {
+		for _, category := range group.CategoryDeltas {
+			deltas = append(deltas, category)
+		}
+	}
+	changeDollars, changeCents := delta.SumChanges(deltas)
+
+	assignableTotal := assignableDollars*100 + int64(assignableCents)
+	changeTotal := changeDollars*100 + int64(changeCents)
+
+	if changeTotal > assignableTotal {
+		confirmPrompt := &promptui.Prompt{
+			Label:    fmt.Sprintf("Your total to be assigned ($%d.%02d) is greater than your amount ready for assignment ($%d.%02d). Do you wish to continue the application?", changeDollars, changeCents, assignableDollars, assignableCents),
+			Validate: validateYesNo,
+		}
+
+		promptResult, err := confirmPrompt.Run()
+		if err != nil {
+			return false, fmt.Errorf("failed to prompt for confirmation of application: %w", err)
+		}
+
+		return promptResult == "yes", nil
+	}
+
+	return true, nil
+}
+
+func validateYesNo(input string) error {
+	if input != "yes" && input != "no" {
+		return fmt.Errorf("invalid selection: %s", input)
+	}
+
+	return nil
 }
 
 func confirmApplication(deltas []*delta.BudgetCategoryDeltaGroup) (bool, error) {
 	delta.PrintDeltas(deltas)
 
 	confirmPrompt := promptui.Prompt{
-		Label: "Do you wish to apply these changes? (yes/no)",
-		Validate: func(input string) error {
-			if input != "yes" && input != "no" {
-				return fmt.Errorf("invalid selection: %s", input)
-			}
-
-			return nil
-		},
+		Label:    "Do you wish to apply these changes? (yes/no)",
+		Validate: validateYesNo,
 	}
 
 	result, err := confirmPrompt.Run()
