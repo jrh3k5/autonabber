@@ -15,8 +15,6 @@ import (
 	"go.uber.org/zap"
 )
 
-// TODO: add support for parseable average-spent-##m
-
 func main() {
 	_l, err := zap.NewDevelopment()
 	if err != nil {
