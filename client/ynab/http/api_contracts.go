@@ -35,6 +35,18 @@ type budgetCategory struct {
 	Hidden   bool   `json:"hidden"`
 }
 
+type budgetMonthData struct {
+	Data *budgetMonth `json:"data"`
+}
+
+type budgetMonth struct {
+	Month *budgetMonthDetails `json:"month"`
+}
+
+type budgetMonthDetails struct {
+	ToBeBudgeted int64 `json:"to_be_budgeted"`
+}
+
 type categoryPatchRequest struct {
 	Category *patchedCategory `json:"category"`
 }
