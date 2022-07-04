@@ -10,6 +10,7 @@ import (
 	"github.com/jrh3k5/autonabber/client/ynab/http"
 	"github.com/jrh3k5/autonabber/client/ynab/model"
 	"github.com/jrh3k5/autonabber/delta"
+	"github.com/jrh3k5/autonabber/format"
 	"github.com/jrh3k5/autonabber/input"
 
 	"github.com/manifoldco/promptui"
@@ -42,6 +43,11 @@ func main() {
 	budgetCategoryGroups, err := client.GetCategories(budget)
 	if err != nil {
 		logger.Fatalf("Unable to retrieve budget categories: %w", err)
+	}
+
+	if appArgs.PrintBudget {
+		logger.Infof("Printing budget as requested:")
+		model.PrintBudgetCategoryGroups(budgetCategoryGroups)
 	}
 
 	budgetChange, err := getBudgetChanges(appArgs.InputFile)
@@ -85,14 +91,16 @@ func main() {
 					if change.HasChanges() {
 						nonZeroChanges = append(nonZeroChanges, change)
 						if err := client.SetBudget(budget, change.BudgetCategory, change.FinalDollars, change.FinalCents); err != nil {
-							logger.Fatalf("Failed to set budget category '%s' under budget '%s' to $%d.%02d: %w", change.BudgetCategory.Name, budget.Name, change.FinalDollars, change.FinalCents, err)
+							formattedFinal := format.FormatUSD(change.FinalDollars, change.FinalCents)
+							logger.Fatalf("Failed to set budget category '%s' under budget '%s' to %s: %w", change.BudgetCategory.Name, budget.Name, formattedFinal, err)
 						}
 					}
 				}
 			}
 
 			deltaDollars, deltaCents := delta.SumChanges(nonZeroChanges)
-			fmt.Printf("Added $%d.%02d across %d categories\n", deltaDollars, deltaCents, len(nonZeroChanges))
+			formattedDelta := format.FormatUSD(deltaDollars, deltaCents)
+			fmt.Printf("Added %s across %d categories\n", formattedDelta, len(nonZeroChanges))
 		}
 	} else {
 		fmt.Println("Application has been cancelled")
@@ -118,8 +126,10 @@ func checkAssignability(groups []*model.BudgetCategoryGroup, deltaGroups []*delt
 	changeTotal := changeDollars*100 + int64(changeCents)
 
 	if changeTotal > assignableTotal {
+		formattedChange := format.FormatUSD(changeDollars, changeCents)
+		formattedAssignable := format.FormatUSD(assignableDollars, assignableCents)
 		confirmPrompt := &promptui.Prompt{
-			Label:    fmt.Sprintf("Your total to be assigned ($%d.%02d) is greater than your amount ready for assignment ($%d.%02d). Do you wish to continue the application? (yes/no)", changeDollars, changeCents, assignableDollars, assignableCents),
+			Label:    fmt.Sprintf("Your total to be assigned (%s) is greater than your amount ready for assignment (%s). Do you wish to continue the application? (yes/no)", formattedChange, formattedAssignable),
 			Validate: validateYesNo,
 		}
 

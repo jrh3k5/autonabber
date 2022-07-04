@@ -30,6 +30,7 @@ type budgetCategory struct {
 	ID       string `json:"id"`
 	Name     string `json:"name"`
 	Budgeted int64  `json:"budgeted"`
+	Balance  int64  `json:"balance"`
 }
 
 type categoryPatchRequest struct {

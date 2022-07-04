@@ -5,6 +5,7 @@ import (
 
 	"github.com/jrh3k5/autonabber/client/ynab"
 	"github.com/jrh3k5/autonabber/client/ynab/model"
+	"github.com/jrh3k5/autonabber/format"
 	"github.com/jrh3k5/autonabber/input"
 )
 
@@ -111,7 +112,13 @@ func PrintDeltas(groups []*BudgetCategoryDeltaGroup) {
 		fmt.Printf("%s\n", group.Name)
 		for _, change := range nonZeroChanges {
 			deltaDollars, deltaCents := change.CalculateDelta()
-			fmt.Printf("  %s: $%d.%02d => $%d.%02d (+$%d.%02d)\n", change.BudgetCategory.Name, change.InitialDollars, change.InitialCents, change.FinalDollars, change.FinalCents, deltaDollars, deltaCents)
+			initialFormatted := format.FormatUSD(change.InitialDollars, change.InitialCents)
+			finalFormatted := format.FormatUSD(change.FinalDollars, change.FinalCents)
+			deltaFormatted := format.FormatUSD(deltaDollars, deltaCents)
+			if deltaDollars >= 0 && deltaCents >= 0 {
+				deltaFormatted = "+" + deltaFormatted
+			}
+			fmt.Printf("  %s: %s => %s (%s)\n", change.BudgetCategory.Name, initialFormatted, finalFormatted, deltaFormatted)
 		}
 	}
 }
