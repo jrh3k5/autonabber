@@ -26,6 +26,10 @@ When you execute this application, you will be given the following prompts:
   * If you choose to confirm and the amount to be budgeted exceeds your funds in Ready to Assign, you will be prompted to confirm that you still wish to apply these changes
 * If you have not opted to cancel the application of changes at any time, they will be applied to your budget
 
+### Dry Run
+
+To run this through to completion _except_ for the actual application of changes to the budget, specify the `-dry-run=true` option. This will still _read_ information from YNAB, but, if you confirm the application, it will not _write_ any changes to YNAB.
+
 ### Printing the Budget
 
 If you want to see a copy of the budget as it's stored in YNAB, you can use the `-print-budget=true` option.

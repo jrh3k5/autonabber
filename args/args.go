@@ -10,6 +10,7 @@ type Args struct {
 	InputFile             string
 	PrintBudget           bool
 	PrintHiddenCategories bool
+	DryRun                bool
 }
 
 func GetArgs() (*Args, error) {
@@ -24,6 +25,9 @@ func GetArgs() (*Args, error) {
 
 	var printHiddenCategories bool
 	flag.BoolVar(&printHiddenCategories, "print-hidden-categories", false, "if print-budget is specified, controls if hidden categories are printed")
+
+	var dryRun bool
+	flag.BoolVar(&dryRun, "dry-run", false, "changes to budgets are not actually applied")
 
 	flag.Parse()
 
@@ -40,5 +44,6 @@ func GetArgs() (*Args, error) {
 		InputFile:             inputFile,
 		PrintBudget:           printBudget,
 		PrintHiddenCategories: printHiddenCategories,
+		DryRun:                dryRun,
 	}, nil
 }
