@@ -76,7 +76,12 @@ func main() {
 	}
 
 	if appConfirmed {
-		doAssignment, err := checkAssignability(budgetCategoryGroups, deltas)
+		assignableDollars, assignableCents, err := client.GetReadyToAssign(budget)
+		if err != nil {
+			logger.Fatalf("Failed to get assignable dollars and cents: %w", err)
+		}
+
+		doAssignment, err := checkAssignability(assignableDollars, assignableCents, budgetCategoryGroups, deltas)
 		if err != nil {
 			logger.Fatalf("Failed to check availability of assignable funds: %w", err)
 		}
@@ -111,9 +116,7 @@ func main() {
 
 // checkAssignability checks to see if the total of the changes to be applied exceeds the amount available for assignment
 // It returns true if either the user has chosen to continue or there is enough to be assigned; false if not and the application should be canceled
-func checkAssignability(groups []*model.BudgetCategoryGroup, deltaGroups []*delta.BudgetCategoryDeltaGroup) (bool, error) {
-	assignableDollars, assignableCents := model.GetReadyToAssign(groups)
-
+func checkAssignability(assignableDollars int64, assignableCents int16, groups []*model.BudgetCategoryGroup, deltaGroups []*delta.BudgetCategoryDeltaGroup) (bool, error) {
 	var deltas []*delta.BudgetCategoryDelta
 	for _, group := range deltaGroups {
 		for _, category := range group.CategoryDeltas {
