@@ -38,6 +38,10 @@ func GetReadyToAssign(groups []*BudgetCategoryGroup) (int64, int16) {
 func PrintBudgetCategoryGroups(budgetCategoryGroups []*BudgetCategoryGroup) {
 	var indent int
 	for _, budgetCategoryGroup := range budgetCategoryGroups {
+		// Don't print out the internal master category - doesn't seem terribly helpful
+		if "Internal Master Category" == budgetCategoryGroup.Name {
+			continue
+		}
 		fmt.Println(budgetCategoryGroup.Name)
 		indent += 2
 		for _, budgetCategory := range budgetCategoryGroup.Categories {
