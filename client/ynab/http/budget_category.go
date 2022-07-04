@@ -27,17 +27,15 @@ func (c *Client) GetCategories(budget *model.Budget) ([]*model.BudgetCategoryGro
 				Hidden: responseBudgetCategoryGroup.Hidden,
 			}
 			for _, responseBudgetCategory := range responseBudgetCategoryGroup.Categories {
-				budgetedMillidollars := responseBudgetCategory.Budgeted % 1000
-				budgetedDollars := (responseBudgetCategory.Budgeted - budgetedMillidollars) / 1000
-				availableMillidollars := responseBudgetCategory.Balance % 1000
-				availableDollars := (responseBudgetCategory.Balance - availableMillidollars) / 1000
+				budgetedDollars, budgetedCents := ParseMillidollars(responseBudgetCategory.Budgeted)
+				availableDollars, availableCents := ParseMillidollars(responseBudgetCategory.Balance)
 				budgetCategory := &model.BudgetCategory{
 					ID:               responseBudgetCategory.ID,
 					Name:             responseBudgetCategory.Name,
 					BudgetedDollars:  budgetedDollars,
-					BudgetedCents:    int16(budgetedMillidollars / 10),
+					BudgetedCents:    budgetedCents,
 					AvailableDollars: availableDollars,
-					AvailableCents:   int16(availableMillidollars / 10),
+					AvailableCents:   availableCents,
 					Hidden:           responseBudgetCategory.Hidden,
 				}
 				budgetCategoryGroup.Categories = append(budgetCategoryGroup.Categories, budgetCategory)

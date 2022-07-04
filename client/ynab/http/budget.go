@@ -51,7 +51,7 @@ func (c *Client) GetBudgets() ([]*model.Budget, error) {
 }
 
 func (c *Client) SetBudget(budget *model.Budget, category *model.BudgetCategory, newDollars int64, newCents int16) error {
-	budgetedMillidollars := newDollars*1000 + int64(newCents)*100
+	budgetedMillidollars := ToMillidollars(newDollars, newCents)
 	requestPath := fmt.Sprintf("/budgets/%s/months/current/categories/%s", budget.ID, category.ID)
 	requestBody := &categoryPatchRequest{
 		Category: &patchedCategory{
