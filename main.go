@@ -47,7 +47,7 @@ func main() {
 
 	if appArgs.PrintBudget {
 		logger.Infof("Printing budget as requested:")
-		model.PrintBudgetCategoryGroups(budgetCategoryGroups)
+		model.PrintBudgetCategoryGroups(budgetCategoryGroups, appArgs.PrintHiddenCategories)
 	}
 
 	budgetChange, err := getBudgetChanges(appArgs.InputFile)

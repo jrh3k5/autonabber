@@ -23,7 +23,8 @@ func (c *Client) GetCategories(budget *model.Budget) ([]*model.BudgetCategoryGro
 	if budgetCategoriesResponse.Data != nil {
 		for _, responseBudgetCategoryGroup := range budgetCategoriesResponse.Data.CategoryGroups {
 			budgetCategoryGroup := &model.BudgetCategoryGroup{
-				Name: responseBudgetCategoryGroup.Name,
+				Name:   responseBudgetCategoryGroup.Name,
+				Hidden: responseBudgetCategoryGroup.Hidden,
 			}
 			for _, responseBudgetCategory := range responseBudgetCategoryGroup.Categories {
 				budgetedMillidollars := responseBudgetCategory.Budgeted % 1000
@@ -37,6 +38,7 @@ func (c *Client) GetCategories(budget *model.Budget) ([]*model.BudgetCategoryGro
 					BudgetedCents:    int16(budgetedMillidollars / 10),
 					AvailableDollars: availableDollars,
 					AvailableCents:   int16(availableMillidollars / 10),
+					Hidden:           responseBudgetCategory.Hidden,
 				}
 				budgetCategoryGroup.Categories = append(budgetCategoryGroup.Categories, budgetCategory)
 			}
