@@ -6,8 +6,10 @@ import (
 )
 
 type Args struct {
-	AccessToken string
-	InputFile   string
+	AccessToken           string
+	InputFile             string
+	PrintBudget           bool
+	PrintHiddenCategories bool
 }
 
 func GetArgs() (*Args, error) {
@@ -16,6 +18,12 @@ func GetArgs() (*Args, error) {
 
 	var inputFile string
 	flag.StringVar(&inputFile, "file", "", "the file containing the changes to be applied")
+
+	var printBudget bool
+	flag.BoolVar(&printBudget, "print-budget", false, "whether or not the budget should be printed to the screen")
+
+	var printHiddenCategories bool
+	flag.BoolVar(&printHiddenCategories, "print-hidden-categories", false, "if print-budget is specified, controls if hidden categories are printed")
 
 	flag.Parse()
 
@@ -28,7 +36,9 @@ func GetArgs() (*Args, error) {
 	}
 
 	return &Args{
-		AccessToken: accessToken,
-		InputFile:   inputFile,
+		AccessToken:           accessToken,
+		InputFile:             inputFile,
+		PrintBudget:           printBudget,
+		PrintHiddenCategories: printHiddenCategories,
 	}, nil
 }

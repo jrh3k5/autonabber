@@ -26,6 +26,12 @@ When you execute this application, you will be given the following prompts:
   * If you choose to confirm and the amount to be budgeted exceeds your funds in Ready to Assign, you will be prompted to confirm that you still wish to apply these changes
 * If you have not opted to cancel the application of changes at any time, they will be applied to your budget
 
+### Printing the Budget
+
+If you want to see a copy of the budget as it's stored in YNAB, you can use the `-print-budget=true` option.
+
+By default, hidden categories are not printed. If you want to see them, you can add the `-print-hidden-categories` option.
+
 ### YAML File Definition
 
 Conceptually, the YAML file describes sets of changes to be applied - e.g., perhaps you get paid on the 1st and 15th day of each month and the way you distribute each paycheck amongst your budget categories between the 1st and the 15th. In this case, you would have two change sets: one to be applied on the 1st day of the month and one to be applied on the 15th day of the month.

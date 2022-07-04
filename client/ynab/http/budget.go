@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/jrh3k5/autonabber/client/ynab/model"
+	"github.com/jrh3k5/autonabber/format"
 )
 
 func (c *Client) GetBudgets() ([]*model.Budget, error) {
@@ -59,7 +60,8 @@ func (c *Client) SetBudget(budget *model.Budget, category *model.BudgetCategory,
 	}
 
 	if err := c.PatchJSON(requestPath, requestBody); err != nil {
-		return fmt.Errorf("failed to update category '%s' in budget '%s' to $%d.%02d: %w", category.Name, budget.Name, newDollars, newCents, err)
+		formattedNew := format.FormatUSD(newDollars, newCents)
+		return fmt.Errorf("failed to update category '%s' in budget '%s' to %s: %w", category.Name, budget.Name, formattedNew, err)
 	}
 
 	// Because the category groups have been changed, evict the stale data from the cache

@@ -24,12 +24,15 @@ type budgetCategoriesData struct {
 type budgetCategoryGroup struct {
 	Name       string            `json:"name"`
 	Categories []*budgetCategory `json:"categories"`
+	Hidden     bool              `json:"hidden"`
 }
 
 type budgetCategory struct {
 	ID       string `json:"id"`
 	Name     string `json:"name"`
 	Budgeted int64  `json:"budgeted"`
+	Balance  int64  `json:"balance"`
+	Hidden   bool   `json:"hidden"`
 }
 
 type categoryPatchRequest struct {
