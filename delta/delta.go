@@ -71,15 +71,15 @@ func NewDeltas(client ynab.Client, budget *model.Budget, actual []*model.BudgetC
 		for _, actualCategory := range actualGroup.Categories {
 			deltaCategory := &BudgetCategoryDelta{
 				BudgetCategory: actualCategory,
-				InitialDollars: actualCategory.BudgetedDollars,
-				InitialCents:   actualCategory.BudgetedCents,
-				FinalDollars:   actualCategory.BudgetedDollars,
-				FinalCents:     actualCategory.BudgetedCents,
+				InitialDollars: actualCategory.AvailableDollars,
+				InitialCents:   actualCategory.AvailableCents,
+				FinalDollars:   actualCategory.AvailableDollars,
+				FinalCents:     actualCategory.AvailableCents,
 			}
 
 			if deltaCategoryGroup != nil {
 				if change := getChangeByName(actualCategory.Name, deltaCategoryGroup.Changes); change != nil {
-					newDollars, newCents, err := change.ApplyDelta(client, budget, actualCategory, actualCategory.BudgetedDollars, actualCategory.BudgetedCents)
+					newDollars, newCents, err := change.ApplyDelta(client, budget, actualCategory, actualCategory.AvailableDollars, actualCategory.AvailableCents)
 					if err != nil {
 						return nil, fmt.Errorf("failed to apply change for budget category '%s' in grouping '%s': %w", deltaCategoryGroup.Name, change.Name, err)
 					}
