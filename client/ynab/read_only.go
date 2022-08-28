@@ -34,6 +34,6 @@ func (c *readOnlyClient) GetReadyToAssign(budget *model.Budget) (int64, int16, e
 }
 
 func (c *readOnlyClient) SetBudget(budget *model.Budget, category *model.BudgetCategory, newDollars int64, newCents int16) error {
-	c.logger.Infof("Client is read-only; would have, otherwise, applied %d new dollars and %d new cents to the budget '%s' (ID: '%s')", newDollars, newCents, budget.Name, budget.ID)
+	c.logger.Infof("Client is read-only; would have, otherwise, applied %d new dollars and %d new cents to the budget category '%s' (ID: '%s')", newDollars, newCents, category.Name, category.ID)
 	return nil
 }
