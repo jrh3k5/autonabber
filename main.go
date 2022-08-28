@@ -30,13 +30,15 @@ func main() {
 		logger.Fatalf("Unable to parse application arguments: %v", err)
 	}
 
-	if appArgs.DryRun {
-		logger.Info("Dry run mode is enabled; no changes will be written to YNAB")
-	}
-
-	client, err := http.NewClient(appArgs.AccessToken)
+	var client ynab.Client
+	client, err = http.NewClient(appArgs.AccessToken)
 	if err != nil {
 		logger.Fatalf("Unable to instantiate YNAB client: %v", err)
+	}
+
+	if appArgs.DryRun {
+		logger.Info("Dry run mode is enabled; no changes will be written to YNAB")
+		client = ynab.NewReadOnlyClient(logger, client)
 	}
 
 	budget, err := getBudget(client)
@@ -106,13 +108,9 @@ func main() {
 			for changeIndex, change := range nonZeroChanges {
 				logger.Infof("Applying change %d of %d", changeIndex+1, len(nonZeroChanges))
 				nonZeroChanges = append(nonZeroChanges, change)
-				if appArgs.DryRun {
-					logger.Infof("Dry run is enabled; no changes will be made to the budget item '%s'", budget.Name)
-				} else {
-					if err := client.SetBudget(budget, change.BudgetCategory, change.FinalDollars, change.FinalCents); err != nil {
-						formattedFinal := format.FormatUSD(change.FinalDollars, change.FinalCents)
-						logger.Fatalf("Failed to set budget category '%s' under budget '%s' to %s: %w", change.BudgetCategory.Name, budget.Name, formattedFinal, err)
-					}
+				if err := client.SetBudget(budget, change.BudgetCategory, change.FinalDollars, change.FinalCents); err != nil {
+					formattedFinal := format.FormatUSD(change.FinalDollars, change.FinalCents)
+					logger.Fatalf("Failed to set budget category '%s' under budget '%s' to %s: %w", change.BudgetCategory.Name, budget.Name, formattedFinal, err)
 				}
 			}
 
