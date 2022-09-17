@@ -2,7 +2,7 @@ build: generate-mocks compile-go
 
 test: generate-mocks run-ginkgo
 
-ci-build: test
+ci-build: test build
 
 generate-mocks:
 	mockgen -source=client/ynab/client.go -destination=client/mock_ynab/mock_client.go
@@ -22,4 +22,4 @@ release-build:
 	env GOOS=windows GOARCH=amd64 go build -o dist/windows/amd64/autonabber.exe
 	(cd dist/windows/amd64 && zip -r - autonabber.exe) > dist/windows/amd64/win-x64.zip
 
-release: release-clean release-build
+release: test release-clean release-build

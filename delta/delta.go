@@ -15,11 +15,13 @@ type BudgetCategoryDeltaGroup struct {
 }
 
 type BudgetCategoryDelta struct {
-	BudgetCategory *model.BudgetCategory
-	InitialDollars int64
-	InitialCents   int16
-	FinalDollars   int64
-	FinalCents     int16
+	BudgetCategory     *model.BudgetCategory
+	InitialDollars     int64
+	InitialCents       int16
+	FinalDollars       int64
+	FinalCents         int16
+	BudgetDeltaDollars int64
+	BudgetDeltaCents   int16
 }
 
 // CalculateDelta calculates the delta from the initial amount to the final amount.

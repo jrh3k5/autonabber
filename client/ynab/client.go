@@ -19,6 +19,8 @@ type Client interface {
 	// GetReadyToAssign gets the amount ready to assign for the current month in dollars and cents
 	GetReadyToAssign(budget *model.Budget) (int64, int16, error)
 
-	// SetBudget sets the budgeted amount for the given budget and category
+	// SetBudget sets the budgeted amount for the given budget and category.
+	// The given dollars and cents should be what the budgeted amount _for the current budget_
+	// should be. It should NOT be merely the delta of what is to be applied onto the existing budgeted amount.
 	SetBudget(budget *model.Budget, category *model.BudgetCategory, newDollars int64, newCents int16) error
 }
