@@ -20,8 +20,8 @@ type BudgetCategoryDelta struct {
 	InitialCents       int16
 	FinalDollars       int64
 	FinalCents         int16
-	BudgetDeltaDollars int64
-	BudgetDeltaCents   int16
+	FinalBudgetDollars int64
+	FinalBudgetCents   int16
 }
 
 // CalculateDelta calculates the delta from the initial amount to the final amount.
@@ -72,21 +72,30 @@ func NewDeltas(client ynab.Client, budget *model.Budget, actual []*model.BudgetC
 		}
 		for _, actualCategory := range actualGroup.Categories {
 			deltaCategory := &BudgetCategoryDelta{
-				BudgetCategory: actualCategory,
-				InitialDollars: actualCategory.AvailableDollars,
-				InitialCents:   actualCategory.AvailableCents,
-				FinalDollars:   actualCategory.AvailableDollars,
-				FinalCents:     actualCategory.AvailableCents,
+				BudgetCategory:     actualCategory,
+				InitialDollars:     actualCategory.AvailableDollars,
+				InitialCents:       actualCategory.AvailableCents,
+				FinalDollars:       actualCategory.AvailableDollars,
+				FinalCents:         actualCategory.AvailableCents,
+				FinalBudgetDollars: actualCategory.BudgetedDollars,
+				FinalBudgetCents:   actualCategory.BudgetedCents,
 			}
 
 			if deltaCategoryGroup != nil {
 				if change := getChangeByName(actualCategory.Name, deltaCategoryGroup.Changes); change != nil {
 					newDollars, newCents, err := change.ApplyDelta(client, budget, actualCategory, actualCategory.AvailableDollars, actualCategory.AvailableCents)
 					if err != nil {
-						return nil, fmt.Errorf("failed to apply change for budget category '%s' in grouping '%s': %w", deltaCategoryGroup.Name, change.Name, err)
+						return nil, fmt.Errorf("failed to calculate new final dollars and cents for budget category '%s' in grouping '%s': %w", deltaCategoryGroup.Name, change.Name, err)
 					}
 					deltaCategory.FinalDollars = newDollars
 					deltaCategory.FinalCents = newCents
+
+					newBudgetDollars, newBudgetCents, err := change.ApplyDelta(client, budget, actualCategory, actualCategory.BudgetedDollars, actualCategory.BudgetedCents)
+					if err != nil {
+						return nil, fmt.Errorf("failed to calculate new budgeted dollars and cents for budget category '%s' in grouping '%s': %w", deltaCategoryGroup.Name, change.Name, err)
+					}
+					deltaCategory.FinalBudgetDollars = newBudgetDollars
+					deltaCategory.FinalBudgetCents = newBudgetCents
 				}
 			}
 
