@@ -107,7 +107,7 @@ func main() {
 
 			for changeIndex, change := range nonZeroChanges {
 				logger.Infof("Applying change %d of %d", changeIndex+1, len(nonZeroChanges))
-				if err := client.SetBudget(budget, change.BudgetCategory, change.FinalDollars, change.FinalCents); err != nil {
+				if err := client.SetBudget(budget, change.BudgetCategory, change.FinalBudgetDollars, change.FinalBudgetCents); err != nil {
 					formattedFinal := format.FormatUSD(change.FinalDollars, change.FinalCents)
 					logger.Fatalf("Failed to set budget category '%s' under budget '%s' to %s: %w", change.BudgetCategory.Name, budget.Name, formattedFinal, err)
 				}
