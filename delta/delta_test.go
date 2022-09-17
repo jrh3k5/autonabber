@@ -32,20 +32,26 @@ var _ = Describe("Delta", func() {
 				Name: "Frequent",
 				Categories: []*model.BudgetCategory{
 					{
-						Name:            "Groceries",
-						BudgetedDollars: 15,
-						BudgetedCents:   89,
+						Name:             "Groceries",
+						AvailableDollars: 15,
+						AvailableCents:   89,
+						BudgetedDollars:  75,
+						BudgetedCents:    24,
 					},
 					{
-						Name:            "Movies",
-						BudgetedDollars: 24,
-						BudgetedCents:   16,
+						Name:             "Movies",
+						AvailableDollars: 24,
+						AvailableCents:   16,
+						BudgetedDollars:  30,
+						BudgetedCents:    00,
 					},
 					// Hey, don't judge me for disproportionate dining out budgeting over groceries >:(
 					{
-						Name:            "Eating Out",
-						BudgetedDollars: 99,
-						BudgetedCents:   76,
+						Name:             "Eating Out",
+						AvailableDollars: 99,
+						AvailableCents:   76,
+						BudgetedDollars:  150,
+						BudgetedCents:    22,
 					},
 				},
 			},
@@ -54,9 +60,11 @@ var _ = Describe("Delta", func() {
 				Name: "Required",
 				Categories: []*model.BudgetCategory{
 					{
-						Name:            "Mortgage",
-						BudgetedDollars: 800,
-						BudgetedCents:   27,
+						Name:             "Mortgage",
+						AvailableDollars: 800,
+						AvailableCents:   27,
+						BudgetedDollars:  10,
+						BudgetedCents:    12,
 					},
 				},
 			},
@@ -92,6 +100,10 @@ var _ = Describe("Delta", func() {
 		Expect(mortgageDelta).ToNot(BeNil(), "there should be a 'Required' mortgage delta")
 		Expect(mortgageDelta.InitialDollars).To(Equal(int64(800)), "the initial dollars for the Mortgage should be recorded")
 		Expect(mortgageDelta.InitialCents).To(Equal(int16(27)), "the initial cents for the Mortgage should be recorded")
+		Expect(mortgageDelta.FinalDollars).To(Equal(mortgageDelta.InitialDollars), "because there were no changes for the mortgage, the final dollars should be the initial dollars")
+		Expect(mortgageDelta.FinalCents).To(Equal(mortgageDelta.InitialCents), "because there were no changes for the mortgage, the final cents should be the initial cents")
+		Expect(mortgageDelta.FinalBudgetDollars).To(Equal(int64(10)), "because there were no changes to the mortgage budget, the final budgeted dollars amount should be the initial budgeted")
+		Expect(mortgageDelta.FinalBudgetCents).To(Equal(int16(12)), "because there were no changes to the mortgage budget, the final budgeted cents amount should be the initial budgeted")
 		mortgageDollars, mortgageCents := mortgageDelta.CalculateDelta()
 		Expect(mortgageDollars).To(Equal(int64(0)), "there should be no dollar change for the mortgage")
 		Expect(mortgageCents).To(Equal(int16(0)), "there should be no cent change for the mortgage")
@@ -105,6 +117,10 @@ var _ = Describe("Delta", func() {
 		Expect(groceriesDelta).ToNot(BeNil(), "there should be a Groceries delta")
 		Expect(groceriesDelta.InitialDollars).To(Equal(int64(15)), "the Groceries' initial dollars should be recorded")
 		Expect(groceriesDelta.InitialCents).To(Equal(int16(89)), "the Groceries' initial cents should be recorded")
+		Expect(groceriesDelta.FinalDollars).To(Equal(int64(30)), "the delta should be applied to the groceries' final dollars")
+		Expect(groceriesDelta.FinalCents).To(Equal(int16(47)), "the delta should be applied to the groceries' final cents")
+		Expect(groceriesDelta.FinalBudgetDollars).To(Equal(int64(89)), "the budgeted groceries dollars should be initial budget + delta")
+		Expect(groceriesDelta.FinalBudgetCents).To(Equal(int16(82)), "the budgeted groceries cents should initial budget + delta")
 		groceriesDollars, groceriesCents := groceriesDelta.CalculateDelta()
 		Expect(groceriesDollars).To(Equal(int64(14)), "the correct dollars delta for the Groceries category should be returned")
 		Expect(groceriesCents).To(Equal(int16(58)), "the correct cents delta for the Groceries category should be returned")
@@ -113,6 +129,10 @@ var _ = Describe("Delta", func() {
 		Expect(moviesDelta).ToNot(BeNil(), "there should be a Movies delta")
 		Expect(moviesDelta.InitialDollars).To(Equal(int64(24)), "the initial Movies dollar amount should be recorded")
 		Expect(moviesDelta.InitialCents).To(Equal(int16(16)), "the initial Movies cent amount should be recorded")
+		Expect(moviesDelta.FinalDollars).To(Equal(moviesDelta.InitialDollars), "because there were no changes for the movies budget, its final dollars should be its initial dollars")
+		Expect(moviesDelta.FinalCents).To(Equal(moviesDelta.FinalCents), "because there were no changes to the movies budget, its final cents should be its initial cents")
+		Expect(moviesDelta.FinalBudgetDollars).To(Equal(int64(30)), "because there were no changes to the movie budget, the final budgeted dollars amount should be the initial budgeted")
+		Expect(moviesDelta.FinalBudgetCents).To(Equal(int16(00)), "because there were no changes to the movie budget, the final budgeted cents amount should be the initial budgeted")
 		moviesDollars, moviesCents := moviesDelta.CalculateDelta()
 		Expect(moviesDollars).To(Equal(int64(0)), "there should be 0 new dollars for Movies")
 		Expect(moviesCents).To(Equal(int16(0)), "there should be 0 new cents for Movies")
@@ -121,6 +141,10 @@ var _ = Describe("Delta", func() {
 		Expect(eatingOutDelta).ToNot(BeNil(), "there should be an Eating Out delta")
 		Expect(eatingOutDelta.InitialDollars).To(Equal(int64(99)), "the initial dollars for Eating Out should be recorded")
 		Expect(eatingOutDelta.InitialCents).To(Equal(int16(76)), "the initial cents for Eating Out should be recorded")
+		Expect(eatingOutDelta.FinalDollars).To(Equal(int64(133)), "the eating out final dollars should reflect the change")
+		Expect(eatingOutDelta.FinalCents).To(Equal(int16(76)), "the eating out final cents should reflect the budget change")
+		Expect(eatingOutDelta.FinalBudgetDollars).To(Equal(int64(184)), "the eating out final budget dollars should be initial + delta")
+		Expect(eatingOutDelta.FinalBudgetCents).To(Equal(int16(22)), "the eating out final budget dollars should be initial + delta")
 		eatingOutDollars, eatingOutCents := eatingOutDelta.CalculateDelta()
 		Expect(eatingOutDollars).To(Equal(int64(34)), "the delta for Eating Out dollars should be correct")
 		Expect(eatingOutCents).To(Equal(int16(0)), "the delta for Eating Out cents should be correct")
@@ -162,7 +186,7 @@ var _ = Describe("Delta", func() {
 
 			averageDollars := int64(35)
 			averageCents := int16(28)
-			ynabClient.EXPECT().GetMonthlyAverageSpent(gomock.Eq(budget), gomock.Eq(budgetCategory), gomock.Eq(9)).Return(averageDollars, averageCents, nil)
+			ynabClient.EXPECT().GetMonthlyAverageSpent(gomock.Eq(budget), gomock.Eq(budgetCategory), gomock.Eq(9)).AnyTimes().Return(averageDollars, averageCents, nil)
 
 			delta, err := delta.NewDeltas(ynabClient, budget, actual, toApply)
 			Expect(err).To(BeNil(), "the delta formulation should not have failed")
