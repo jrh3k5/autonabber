@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"os"
@@ -95,27 +96,13 @@ func main() {
 		if !doAssignment {
 			fmt.Println("Application has been cancelled")
 		} else {
-			var nonZeroChanges []*delta.BudgetCategoryDelta
-
-			for _, delta := range deltas {
-				for _, change := range delta.CategoryDeltas {
-					if change.HasChanges() {
-						nonZeroChanges = append(nonZeroChanges, change)
-					}
-				}
+			changeApplicator := delta.NewClientApplicator(logger.Desugar(), client)
+			deltaDollars, deltaCents, deltaErr := changeApplicator.ApplyChanges(context.Background(), budget, deltas)
+			if deltaErr != nil {
+				logger.Fatalf("Failed to apply changes: %v", deltaErr)
 			}
-
-			for changeIndex, change := range nonZeroChanges {
-				logger.Infof("Applying change %d of %d", changeIndex+1, len(nonZeroChanges))
-				if err := client.SetBudget(budget, change.BudgetCategory, change.FinalBudgetDollars, change.FinalBudgetCents); err != nil {
-					formattedFinal := format.FormatUSD(change.FinalDollars, change.FinalCents)
-					logger.Fatalf("Failed to set budget category '%s' under budget '%s' to %s: %w", change.BudgetCategory.Name, budget.Name, formattedFinal, err)
-				}
-			}
-
-			deltaDollars, deltaCents := delta.SumChanges(nonZeroChanges)
 			formattedDelta := format.FormatUSD(deltaDollars, deltaCents)
-			fmt.Printf("Added %s across %d categories\n", formattedDelta, len(nonZeroChanges))
+			fmt.Printf("Added %s across %d categories\n", formattedDelta, len(deltas))
 		}
 	} else {
 		fmt.Println("Application has been cancelled")
