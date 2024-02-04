@@ -7,7 +7,7 @@ I created this tool because I do the same applications when my paychecks land an
 
 To use this application, you will need the following:
 
-* A personal access token (described [here](https://api.youneedabudget.com/#personal-access-tokens) in YNAB's documentatio)
+* A personal access token (described [here](https://api.youneedabudget.com/#personal-access-tokens) in YNAB's documentation)
 * A YAML file describing the changes to be applied (refer to [YAML File Definition](#yaml-file-definition) for details on how to structure it)
 
 Once you have these two artifacts, you can compile the application and then execute it so like so:
