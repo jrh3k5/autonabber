@@ -5,18 +5,28 @@ I created this tool because I do the same applications when my paychecks land an
 
 ## Usage
 
-To use this application, you will need the following:
+To use this application, you will need a client ID and secret registered as described in the YNAB documentation [here](https://api.ynab.com/#oauth-applications). You are advised to register it with the following information:
 
-* A personal access token (described [here](https://api.youneedabudget.com/#personal-access-tokens) in YNAB's documentation)
-* A YAML file describing the changes to be applied (refer to [YAML File Definition](#yaml-file-definition) for details on how to structure it)
+* **Name**: autonabber
+* **Redirect URI(s)**: http://localhost:54520
+
+All other fields in the form can be left blank / unchecked (but leave checked the acknowledgement that this application complies the API terms of service)
+
+You will also need a YAML file describing the changes to be applied. Refer to [YAML File Definition](#yaml-file-definition) for details on how to structure it.
 
 Once you have these two artifacts, you can compile the application and then execute it so like so:
 
 ```
-./autonabber --access-token=<personal access token> --file=<name of YAML file>
+./autonabber
 ```
 
-When you execute this application, you will be given the following prompts:
+You will be asked for:
+
+* Your client ID (registered above)
+* Your client secret (registered above)
+* The file of your changes (defaults to `changes.yaml`)
+
+When you provide these, you may be given the following prompts:
 
 * If you have multiple budgets, you will be asked to select one
   * If you only have one budget, then you will not receive this prompt
@@ -26,15 +36,24 @@ When you execute this application, you will be given the following prompts:
   * If you choose to confirm and the amount to be budgeted exceeds your funds in Ready to Assign, you will be prompted to confirm that you still wish to apply these changes
 * If you have not opted to cancel the application of changes at any time, they will be applied to your budget
 
-### Dry Run
+
+### Optional Arguments
+
+When you invoke the `autonabber` executable, you can provide the following optional command-line arguments.
+
+#### Dry Run
 
 To run this through to completion _except_ for the actual application of changes to the budget, specify the `-dry-run=true` option. This will still _read_ information from YNAB, but, if you confirm the application, it will not _write_ any changes to YNAB.
 
-### Printing the Budget
+#### Printing the Budget
 
 If you want to see a copy of the budget as it's stored in YNAB, you can use the `-print-budget=true` option.
 
 By default, hidden categories are not printed. If you want to see them, you can add the `-print-hidden-categories` option.
+
+#### Local Server Port
+
+This application starts a local server that receives the request containing the OAuth token. By default, this service listens on port 54520, but, on the chance that this is not a desirable port, you can specify `-oauth-server-port=<number>` to specify the port number on which that server listens.
 
 ### YAML File Definition
 
@@ -65,7 +84,7 @@ The change operation can be one of the following:
 
 This application has the following prerequisites:
 
-* Go >= 1.18.0
+* Go >= 1.22.0
 * [gomock](https://github.com/golang/mock)
 
 To build the application, run:
