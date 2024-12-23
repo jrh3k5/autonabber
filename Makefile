@@ -8,7 +8,7 @@ generate-mocks:
 	mockgen -source=client/ynab/client.go -destination=client/mock_ynab/mock_client.go
 
 run-ginkgo:
-	ginkgo run -r ./..
+	go test ./...
 
 compile-go:
 	go build
