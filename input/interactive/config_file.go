@@ -7,6 +7,7 @@ import (
 	"github.com/manifoldco/promptui"
 )
 
+// GetConfigFilePath prompts the user for a config file path interactively.
 func GetConfigFilePath(ctx context.Context) (string, error) {
 	prompt := &promptui.Prompt{
 		Label:   "Config File Path",

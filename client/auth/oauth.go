@@ -40,6 +40,7 @@ func WithOAuthServerPort(port int) TokenOption {
 	}
 }
 
+// GetOAuthToken prompts the user for OAuth token interactively.
 func GetOAuthToken(ctx context.Context, clientID string, clientSecret string, opts ...TokenOption) (*oauth2.Token, error) {
 	tokenOptions := &TokenOptions{
 		serverPort: DefaultOAuthServerPort,
