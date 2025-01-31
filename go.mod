@@ -1,6 +1,6 @@
 module github.com/jrh3k5/autonabber
 
-go 1.22.0
+go 1.23.0
 
 toolchain go1.23.3
 
