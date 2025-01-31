@@ -84,7 +84,7 @@ The change operation can be one of the following:
 
 This application has the following prerequisites:
 
-* Go >= 1.22.0
+* Go >= 1.23.0
 * [gomock](https://github.com/golang/mock)
 
 To build the application, run:

@@ -1,9 +1,10 @@
 package args
 
 import (
-	"flag"
-
-	"github.com/jrh3k5/autonabber/client/auth"
+	"fmt"
+	"os"
+	"strconv"
+	"strings"
 )
 
 type Args struct {
@@ -11,26 +12,46 @@ type Args struct {
 	PrintHiddenCategories bool
 	DryRun                bool
 	OAuthServerPort       int
+	ConfigFilePath        string
 }
 
 func GetArgs() (*Args, error) {
-	var printBudget bool
-	flag.BoolVar(&printBudget, "print-budget", false, "whether or not the budget should be printed to the screen")
+	args := &Args{
+		OAuthServerPort: 54520,
+		ConfigFilePath:  "changes.yaml",
+	}
 
-	var printHiddenCategories bool
-	flag.BoolVar(&printHiddenCategories, "print-hidden-categories", false, "if print-budget is specified, controls if hidden categories are printed")
+	for _, arg := range os.Args {
+		switch {
+		case strings.HasPrefix(arg, "--file="):
+			args.ConfigFilePath = strings.TrimPrefix(arg, "--file=")
+		case strings.HasPrefix(arg, "--oauth-server-port="):
+			port, err := strconv.Atoi(strings.TrimPrefix(arg, "--oauth-server-port="))
+			if err != nil {
+				return nil, fmt.Errorf("invalid OAuth server port specified ('%s'): %w", arg, err)
+			}
 
-	var dryRun bool
-	flag.BoolVar(&dryRun, "dry-run", false, "changes to budgets are not actually applied")
+			args.OAuthServerPort = port
+		case strings.HasPrefix(arg, "--dry-run"):
+			if arg == "--dry-run" {
+				args.DryRun = true
+			} else {
+				parsedBool, err := strconv.ParseBool(strings.TrimPrefix(arg, "--dry-run="))
+				if err != nil {
+					return nil, fmt.Errorf("invalid dry-run value specified ('%s'): %w", arg, err)
+				}
 
-	var oAuthServerPort int
-	flag.IntVar(&oAuthServerPort, "oauth-server-port", auth.DefaultOAuthServerPort, "the port on which the OAuth server should run")
+				args.DryRun = parsedBool
+			}
+		case strings.HasPrefix(arg, "--print-budget="):
+			parsedBool, err := strconv.ParseBool(strings.TrimPrefix(arg, "--print-budget="))
+			if err != nil {
+				return nil, fmt.Errorf("invalid print-budget value specified ('%s'): %w", arg, err)
+			}
 
-	flag.Parse()
+			args.PrintBudget = parsedBool
+		}
+	}
 
-	return &Args{
-		PrintBudget:           printBudget,
-		PrintHiddenCategories: printHiddenCategories,
-		DryRun:                dryRun,
-	}, nil
+	return args, nil
 }

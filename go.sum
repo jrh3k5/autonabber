@@ -23,6 +23,10 @@ github.com/int128/listener v1.2.0 h1:Gj+wLX1mCfetZWJz0wi7343JuP8qGrYcbavNQR2xye4
 github.com/int128/listener v1.2.0/go.mod h1:k2nhHj+0PLFQ9VD15FnRubK8iJ5t9cif15HwhQ8Liok=
 github.com/int128/oauth2cli v1.15.1 h1:bi/Xuf6GHbPb7+EPAovN5Kg/QREvF2z8Q1XcAMLDloQ=
 github.com/int128/oauth2cli v1.15.1/go.mod h1:CLt6GONO1LnEQzP0o1FbWYuie84CmVuXgY0sO0gLRMc=
+github.com/jrh3k5/oauth-cli v1.0.0 h1:Heygl1Li7GgwFaEOU1gRaSNyu9KDVITJK9S9v7+kts4=
+github.com/jrh3k5/oauth-cli v1.0.0/go.mod h1:xT0oCi6eNERGFhHtBlgJnXzOUGkT1XXZBUzTCHoIIzM=
+github.com/jrh3k5/oauth-cli v1.0.1 h1:IbuwLDW0VGHq64toapeOUxLw3qIK3pmEavo7uz3A964=
+github.com/jrh3k5/oauth-cli v1.0.1/go.mod h1:xT0oCi6eNERGFhHtBlgJnXzOUGkT1XXZBUzTCHoIIzM=
 github.com/manifoldco/promptui v0.9.0 h1:3V4HzJk1TtXW1MTZMP7mdlwbBpIinw3HztaIlYthEiA=
 github.com/manifoldco/promptui v0.9.0/go.mod h1:ka04sppxSGFAtxX0qhlYQjISsg9mR4GWtQEhdbn6Pgg=
 github.com/onsi/ginkgo/v2 v2.22.2 h1:/3X8Panh8/WwhU/3Ssa6rCKqPLuAkVY2I0RoyDLySlU=

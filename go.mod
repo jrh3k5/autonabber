@@ -1,6 +1,6 @@
 module github.com/jrh3k5/autonabber
 
-go 1.22.0
+go 1.23.0
 
 toolchain go1.23.3
 
@@ -25,6 +25,7 @@ require (
 	github.com/google/go-cmp v0.6.0 // indirect
 	github.com/google/pprof v0.0.0-20241210010833-40e02aabc2ad // indirect
 	github.com/int128/listener v1.2.0 // indirect
+	github.com/jrh3k5/oauth-cli v1.0.1 // indirect
 	go.uber.org/multierr v1.10.0 // indirect
 	golang.org/x/net v0.33.0 // indirect
 	golang.org/x/sys v0.28.0 // indirect
