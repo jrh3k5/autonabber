@@ -7,14 +7,13 @@ import (
 	"os"
 
 	"github.com/jrh3k5/autonabber/args"
-	"github.com/jrh3k5/autonabber/client/auth"
 	"github.com/jrh3k5/autonabber/client/ynab"
 	"github.com/jrh3k5/autonabber/client/ynab/http"
 	"github.com/jrh3k5/autonabber/client/ynab/model"
 	"github.com/jrh3k5/autonabber/delta"
 	"github.com/jrh3k5/autonabber/format"
 	"github.com/jrh3k5/autonabber/input"
-	"github.com/jrh3k5/autonabber/input/interactive"
+	"github.com/jrh3k5/oauth-cli/pkg/auth"
 
 	"github.com/manifoldco/promptui"
 	"go.uber.org/zap"
@@ -35,25 +34,11 @@ func main() {
 		logger.Fatalf("Unable to parse application arguments: %v", err)
 	}
 
-	clientID, err := interactive.GetOAuthClientID(ctx)
-	if err != nil {
-		logger.Fatalf("Unable to retrieve OAuth client ID: %v", err)
-	}
-
-	clientSecret, err := interactive.GetOAuthClientSecret(ctx)
-	if err != nil {
-		logger.Fatalf("Unable to retrieve OAuth client secret: %v", err)
-	}
-
-	configFile, err := interactive.GetConfigFilePath(ctx)
-	if err != nil {
-		logger.Fatalf("Unable to retrieve config file path: %v", err)
-	}
-
-	oauthToken, err := auth.GetOAuthToken(ctx,
-		clientID,
-		clientSecret,
-		auth.WithLogger(logger.Infof))
+	oauthToken, err := auth.DefaultGetOAuthToken(ctx,
+		"https://app.ynab.com/oauth/authorize",
+		"https://api.ynab.com/oauth/token",
+		auth.WithLogger(logger.Infof),
+		auth.WithOAuthServerPort(appArgs.OAuthServerPort))
 	if err != nil {
 		logger.Fatalf("Unable to retrieve OAuth token: %v", err)
 	}
@@ -84,7 +69,7 @@ func main() {
 		model.PrintBudgetCategoryGroups(budgetCategoryGroups, appArgs.PrintHiddenCategories)
 	}
 
-	budgetChange, err := getBudgetChanges(configFile)
+	budgetChange, err := getBudgetChanges(appArgs.ConfigFilePath)
 	if err != nil {
 		logger.Fatalf("Failed to select budget change: %w", err)
 	}
