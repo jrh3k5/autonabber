@@ -14,19 +14,9 @@ All other fields in the form can be left blank / unchecked (but leave checked th
 
 You will also need a YAML file describing the changes to be applied. Refer to [YAML File Definition](#yaml-file-definition) for details on how to structure it.
 
-Once you have these two artifacts, you can compile the application and then execute it so like so:
+Once you have these two artifacts, you can compile the application and then execute it, providing OAuth details are interactively or non-interactively.
 
-```
-./autonabber
-```
-
-You will be asked for:
-
-* Your client ID (registered above)
-* Your client secret (registered above)
-* The file of your changes (defaults to `changes.yaml`)
-
-When you provide these, you may be given the following prompts:
+Regardless of how you engage with the app to execute it, you may be given the following prompts:
 
 * If you have multiple budgets, you will be asked to select one
   * If you only have one budget, then you will not receive this prompt
@@ -36,24 +26,54 @@ When you provide these, you may be given the following prompts:
   * If you choose to confirm and the amount to be budgeted exceeds your funds in Ready to Assign, you will be prompted to confirm that you still wish to apply these changes
 * If you have not opted to cancel the application of changes at any time, they will be applied to your budget
 
+### OAuth Token Retrieval
+
+This app supports two means of providing OAuth details: interactively and non-interactively.
+
+#### Executing Interactively
+
+If you would like to be prompted for your OAuth client and secret - which helps keep them out of your terminal history - you can execute this tool as:
+
+```
+./autonabber --interactive
+```
+
+You will be asked for:
+
+* Your client ID (registered above)
+* Your client secret (registered above)
+
+#### Executing Non-Interactively
+
+Please note that this only controls the interactivity of the fetching of the OAuth token.
+
+You can provide the OAuth client and secret non-interactively by executing:
+
+```
+./autonabber --oauth-client-id=<OAuth client ID> --oauth-client-secret=<OAuth client secret>
+```
 
 ### Optional Arguments
 
 When you invoke the `autonabber` executable, you can provide the following optional command-line arguments.
 
+#### Changes File
+
+By default, this tool looks for a file named `changes.yaml` in the same directory as the executable. If you would like to use a file located at a different location, you can do so by specifying it as a `--file=<location of file>` argument.
+
 #### Dry Run
 
-To run this through to completion _except_ for the actual application of changes to the budget, specify the `-dry-run=true` option. This will still _read_ information from YNAB, but, if you confirm the application, it will not _write_ any changes to YNAB.
+To run this through to completion _except_ for the actual application of changes to the budget, specify the `--dry-run=true` option. This will still _read_ information from YNAB, but, if you confirm the application, it will not _write_ any changes to YNAB.
 
 #### Printing the Budget
 
-If you want to see a copy of the budget as it's stored in YNAB, you can use the `-print-budget=true` option.
+If you want to see a copy of the budget as it's stored in YNAB, you can use the `--print-budget=true` option.
 
-By default, hidden categories are not printed. If you want to see them, you can add the `-print-hidden-categories` option.
+By default, hidden categories are not printed. If you want to see them, you can add the `--print-hidden-categories` option.
 
 #### Local Server Port
 
-This application starts a local server that receives the request containing the OAuth token. By default, this service listens on port 54520, but, on the chance that this is not a desirable port, you can specify `-oauth-server-port=<number>` to specify the port number on which that server listens.
+This application starts a local server that receives the request containing the OAuth token. By default, this service listens on port 54520, but, on the chance that this is not a desirable port, you can specify `--oauth-server-port=<number>` to specify the port number on which that server listens.
 
 ### YAML File Definition
 
