@@ -14,7 +14,7 @@ All other fields in the form can be left blank / unchecked (but leave checked th
 
 You will also need a YAML file describing the changes to be applied. Refer to [YAML File Definition](#yaml-file-definition) for details on how to structure it.
 
-Once you have these two artifacts, you can compile the application and then execute it either interactively or non-interactively.
+Once you have these two artifacts, you can compile the application and then execute it, providing OAuth details are interactively or non-interactively.
 
 Regardless of how you engage with the app to execute it, you may be given the following prompts:
 
@@ -26,7 +26,11 @@ Regardless of how you engage with the app to execute it, you may be given the fo
   * If you choose to confirm and the amount to be budgeted exceeds your funds in Ready to Assign, you will be prompted to confirm that you still wish to apply these changes
 * If you have not opted to cancel the application of changes at any time, they will be applied to your budget
 
-### Executing Interactively
+### OAuth Token Retrieval
+
+This app supports two means of providing OAuth details: interactively and non-interactively.
+
+#### Executing Interactively
 
 If you would like to be prompted for your OAuth client and secret - which helps keep them out of your terminal history - you can execute this tool as:
 
@@ -39,7 +43,7 @@ You will be asked for:
 * Your client ID (registered above)
 * Your client secret (registered above)
 
-### Executing Non-Interactively
+#### Executing Non-Interactively
 
 Please note that this only controls the interactivity of the fetching of the OAuth token.
 
