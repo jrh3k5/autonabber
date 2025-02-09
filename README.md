@@ -124,3 +124,9 @@ To compile artifacts for release, run:
 ```
 make release
 ```
+
+## Privacy Policy
+
+This application does not persist any information given to this application. It only uses the access granted to your account within YNAB to apply the changes you have defined in the given YAML file to your chosen budget.
+
+No data given to this application or read from YNAB is shared with any third parties.
