@@ -23,8 +23,6 @@ github.com/int128/listener v1.2.0 h1:Gj+wLX1mCfetZWJz0wi7343JuP8qGrYcbavNQR2xye4
 github.com/int128/listener v1.2.0/go.mod h1:k2nhHj+0PLFQ9VD15FnRubK8iJ5t9cif15HwhQ8Liok=
 github.com/int128/oauth2cli v1.15.1 h1:bi/Xuf6GHbPb7+EPAovN5Kg/QREvF2z8Q1XcAMLDloQ=
 github.com/int128/oauth2cli v1.15.1/go.mod h1:CLt6GONO1LnEQzP0o1FbWYuie84CmVuXgY0sO0gLRMc=
-github.com/jrh3k5/oauth-cli v1.0.0 h1:Heygl1Li7GgwFaEOU1gRaSNyu9KDVITJK9S9v7+kts4=
-github.com/jrh3k5/oauth-cli v1.0.0/go.mod h1:xT0oCi6eNERGFhHtBlgJnXzOUGkT1XXZBUzTCHoIIzM=
 github.com/jrh3k5/oauth-cli v1.0.1 h1:IbuwLDW0VGHq64toapeOUxLw3qIK3pmEavo7uz3A964=
 github.com/jrh3k5/oauth-cli v1.0.1/go.mod h1:xT0oCi6eNERGFhHtBlgJnXzOUGkT1XXZBUzTCHoIIzM=
 github.com/manifoldco/promptui v0.9.0 h1:3V4HzJk1TtXW1MTZMP7mdlwbBpIinw3HztaIlYthEiA=
@@ -56,8 +54,8 @@ golang.org/x/net v0.0.0-20190620200207-3b0461eec859/go.mod h1:z5CRVTTTmAJ677TzLL
 golang.org/x/net v0.0.0-20210405180319-a5a99cb37ef4/go.mod h1:p54w0d4576C0XHj96bSt6lcn1PtDYWL6XObtHCRCNQM=
 golang.org/x/net v0.33.0 h1:74SYHlV8BIgHIFC/LrYkOGIwL19eTYXQ5wc6TBuO36I=
 golang.org/x/net v0.33.0/go.mod h1:HXLR5J+9DxmrqMwG9qjGCxZ+zKXxBru04zlTvWlWuN4=
-golang.org/x/oauth2 v0.25.0 h1:CY4y7XT9v0cRI9oupztF8AgiIu99L/ksR/Xp/6jrZ70=
-golang.org/x/oauth2 v0.25.0/go.mod h1:XYTD2NtWslqkgxebSiOHnXEap4TF09sJSc7H1sXbhtI=
+golang.org/x/oauth2 v0.26.0 h1:afQXWNNaeC4nvZ0Ed9XvCCzXM6UHJG7iCg0W4fPqSBE=
+golang.org/x/oauth2 v0.26.0/go.mod h1:XYTD2NtWslqkgxebSiOHnXEap4TF09sJSc7H1sXbhtI=
 golang.org/x/sync v0.0.0-20190423024810-112230192c58/go.mod h1:RxMgew5VJxzue5/jJTE5uejpjVlOe/izrB70Jof72aM=
 golang.org/x/sync v0.0.0-20210220032951-036812b2e83c/go.mod h1:RxMgew5VJxzue5/jJTE5uejpjVlOe/izrB70Jof72aM=
 golang.org/x/sync v0.10.0 h1:3NQrjDixjgGwUOCaF8w2+VYHv0Ve/vGYSbdkTa98gmQ=
