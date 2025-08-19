@@ -9,7 +9,7 @@ require (
 	github.com/jrh3k5/oauth-cli v1.0.1
 	github.com/manifoldco/promptui v0.9.0
 	github.com/onsi/ginkgo/v2 v2.24.0
-	github.com/onsi/gomega v1.37.0
+	github.com/onsi/gomega v1.38.0
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	go.uber.org/zap v1.27.0
 	gopkg.in/yaml.v3 v3.0.1
