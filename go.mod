@@ -9,7 +9,7 @@ require (
 	github.com/onsi/ginkgo/v2 v2.28.3
 	github.com/onsi/gomega v1.40.0
 	github.com/patrickmn/go-cache v2.1.0+incompatible
-	go.uber.org/zap v1.27.1
+	go.uber.org/zap v1.28.0
 	gopkg.in/yaml.v3 v3.0.1
 )
 
