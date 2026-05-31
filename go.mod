@@ -5,8 +5,8 @@ go 1.25.0
 require (
 	github.com/jrh3k5/oauth-cli v1.0.1
 	github.com/manifoldco/promptui v0.9.0
-	github.com/onsi/ginkgo/v2 v2.28.3
-	github.com/onsi/gomega v1.40.0
+	github.com/onsi/ginkgo/v2 v2.29.0
+	github.com/onsi/gomega v1.41.0
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	go.uber.org/zap v1.28.0
 	gopkg.in/yaml.v3 v3.0.1
