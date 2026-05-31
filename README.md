@@ -1,3 +1,5 @@
+This project has been [migrated to Codeberg](https://codeberg.org/jrh3k5/).
+
 # autonabber
 Autonabber is a command-line tool that uses YAML files to apply budget changes in YNAB.
 
