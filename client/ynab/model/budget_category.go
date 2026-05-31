@@ -3,7 +3,7 @@ package model
 import (
 	"fmt"
 
-	"github.com/jrh3k5/autonabber/format"
+	"codeberg.org/jrh3k5/autonabber/format"
 )
 
 type BudgetCategoryGroup struct {

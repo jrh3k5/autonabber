@@ -5,7 +5,7 @@ import (
 	"math"
 	"time"
 
-	"github.com/jrh3k5/autonabber/client/ynab/model"
+	"codeberg.org/jrh3k5/autonabber/client/ynab/model"
 )
 
 func (c *Client) GetMonthlyAverageSpent(budget *model.Budget, category *model.BudgetCategory, monthLookback int) (int64, int16, error) {

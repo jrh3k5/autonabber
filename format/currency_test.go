@@ -4,7 +4,7 @@ import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 
-	"github.com/jrh3k5/autonabber/format"
+	"codeberg.org/jrh3k5/autonabber/format"
 )
 
 var _ = Describe("Currency", func() {

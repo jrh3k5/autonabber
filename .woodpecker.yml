@@ -1,0 +1,18 @@
+steps:
+  - name: build
+    image: golang:1.26
+    commands:
+      - go build -v ./...
+    when:
+      - event: push
+        branch: main
+      - event: pull_request
+
+  - name: test
+    image: golang:1.26
+    commands:
+      - go test -v ./...
+    when:
+      - event: push
+        branch: main
+      - event: pull_request

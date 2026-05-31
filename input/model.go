@@ -3,8 +3,8 @@ package input
 import (
 	"fmt"
 
-	"github.com/jrh3k5/autonabber/client/ynab"
-	"github.com/jrh3k5/autonabber/client/ynab/model"
+	"codeberg.org/jrh3k5/autonabber/client/ynab"
+	"codeberg.org/jrh3k5/autonabber/client/ynab/model"
 )
 
 type BudgetChanges struct {

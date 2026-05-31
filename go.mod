@@ -1,9 +1,8 @@
-module github.com/jrh3k5/autonabber
+module codeberg.org/jrh3k5/autonabber
 
 go 1.25.0
 
 require (
-	github.com/golang/mock v1.6.0
 	github.com/jrh3k5/oauth-cli v1.0.1
 	github.com/manifoldco/promptui v0.9.0
 	github.com/onsi/ginkgo/v2 v2.28.3

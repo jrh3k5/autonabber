@@ -3,10 +3,10 @@ package delta
 import (
 	"fmt"
 
-	"github.com/jrh3k5/autonabber/client/ynab"
-	"github.com/jrh3k5/autonabber/client/ynab/model"
-	"github.com/jrh3k5/autonabber/format"
-	"github.com/jrh3k5/autonabber/input"
+	"codeberg.org/jrh3k5/autonabber/client/ynab"
+	"codeberg.org/jrh3k5/autonabber/client/ynab/model"
+	"codeberg.org/jrh3k5/autonabber/format"
+	"codeberg.org/jrh3k5/autonabber/input"
 )
 
 type BudgetCategoryDeltaGroup struct {

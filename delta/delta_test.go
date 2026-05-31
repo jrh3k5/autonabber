@@ -1,29 +1,20 @@
 package delta_test
 
 import (
-	"github.com/jrh3k5/autonabber/client/mock_ynab"
-	"github.com/jrh3k5/autonabber/client/ynab/model"
-	"github.com/jrh3k5/autonabber/delta"
-	"github.com/jrh3k5/autonabber/input"
+	"codeberg.org/jrh3k5/autonabber/client/ynab"
+	"codeberg.org/jrh3k5/autonabber/client/ynab/model"
+	"codeberg.org/jrh3k5/autonabber/delta"
+	"codeberg.org/jrh3k5/autonabber/input"
 
-	"github.com/golang/mock/gomock"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 )
 
 var _ = Describe("Delta", func() {
-	var mockController *gomock.Controller
-	var ynabClient *mock_ynab.MockClient
+	var ynabClient *ynab.InMemoryClient
 
 	BeforeEach(func() {
-		mockController = gomock.NewController(GinkgoT())
-		ynabClient = mock_ynab.NewMockClient(mockController)
-	})
-
-	AfterEach(func() {
-		if mockController != nil {
-			mockController.Finish()
-		}
+		ynabClient = ynab.NewInMemoryClient()
 	})
 
 	It("should generate a delta", func() {
@@ -186,7 +177,9 @@ var _ = Describe("Delta", func() {
 
 			averageDollars := int64(35)
 			averageCents := int16(28)
-			ynabClient.EXPECT().GetMonthlyAverageSpent(gomock.Eq(budget), gomock.Eq(budgetCategory), gomock.Eq(9)).AnyTimes().Return(averageDollars, averageCents, nil)
+			ynabClient.SetCategories(budget.ID, actual)
+			ynabClient.SetMonthlyAverageSpent(budget.ID, budgetCategory.ID, 9, averageDollars, averageCents)
+			ynabClient.SetBudget(budget, budgetCategory, budgetCategory.BudgetedDollars, budgetCategory.BudgetedCents)
 
 			delta, err := delta.NewDeltas(ynabClient, budget, actual, toApply)
 			Expect(err).To(BeNil(), "the delta formulation should not have failed")

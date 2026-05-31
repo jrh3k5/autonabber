@@ -3,7 +3,7 @@ package http
 import (
 	"fmt"
 
-	"github.com/jrh3k5/autonabber/client/ynab/model"
+	"codeberg.org/jrh3k5/autonabber/client/ynab/model"
 )
 
 func (c *Client) GetReadyToAssign(budget *model.Budget) (int64, int16, error) {

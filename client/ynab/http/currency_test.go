@@ -1,7 +1,7 @@
 package http_test
 
 import (
-	"github.com/jrh3k5/autonabber/client/ynab/http"
+	"codeberg.org/jrh3k5/autonabber/client/ynab/http"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 )

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/jrh3k5/autonabber/client/ynab/model"
+	"codeberg.org/jrh3k5/autonabber/client/ynab/model"
 )
 
 func (c *Client) GetCategories(budget *model.Budget) ([]*model.BudgetCategoryGroup, error) {

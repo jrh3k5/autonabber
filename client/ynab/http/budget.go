@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/jrh3k5/autonabber/client/ynab/model"
-	"github.com/jrh3k5/autonabber/format"
+	"codeberg.org/jrh3k5/autonabber/client/ynab/model"
+	"codeberg.org/jrh3k5/autonabber/format"
 )
 
 func (c *Client) GetBudgets() ([]*model.Budget, error) {

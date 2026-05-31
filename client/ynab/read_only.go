@@ -1,7 +1,7 @@
 package ynab
 
 import (
-	"github.com/jrh3k5/autonabber/client/ynab/model"
+	"codeberg.org/jrh3k5/autonabber/client/ynab/model"
 	"go.uber.org/zap"
 )
 

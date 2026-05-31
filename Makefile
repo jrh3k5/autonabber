@@ -1,14 +1,9 @@
-build: generate-mocks compile-go
+build: compile-go
 
-test: generate-mocks run-ginkgo
+test: 
+	go test ./...
 
 ci-build: test build
-
-generate-mocks:
-	mockgen -source=client/ynab/client.go -destination=client/mock_ynab/mock_client.go
-
-run-ginkgo:
-	go test ./...
 
 compile-go:
 	go build
